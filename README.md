@@ -1,0 +1,2 @@
+# PracticasSG
+Practicas Sistemas Graficos
