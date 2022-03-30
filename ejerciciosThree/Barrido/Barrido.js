@@ -15,20 +15,27 @@ class Barrido extends THREE.Object3D {
         this.corazon.position.y = 150;
         this.corazon.rotation.z = Math.PI;
         var puntos = [
-            new THREE.Vector3( -10, 0, 10 ),
-            new THREE.Vector3( 100, 0, 50 ),
-            new THREE.Vector3(150, 50, 100),
-            new THREE.Vector3(0, 80, 150),
-            new THREE.Vector3(-20, 70, 150)
+            new THREE.Vector3(50,50,50),
+            new THREE.Vector3(90, 75, 50),
+            new THREE.Vector3(120, 90, 60),
+            new THREE.Vector3(200, 100, 90),
+            new THREE.Vector3(230, 60, 120)
         ]
         var ruta = new THREE.CatmullRomCurve3(puntos);
         
         var opciones = {steps: 50, curveSegments: 5, extrudePath: ruta};
         var geometriaCorazonBarrido = new THREE.ExtrudeGeometry(this.createShapeCorazon(), opciones);
+        var linea = new THREE.LineBasicMaterial({color: 0xff0000});
+        this.linea = new THREE.Line(geometriaCorazonBarrido, linea);
+        //this.add(this.linea);
         this.corazonBarrido = new THREE.Mesh(geometriaCorazonBarrido,new THREE.MeshNormalMaterial());
-        //this.add(this.corazonBarrido);
+        this.add(this.corazonBarrido);
+
+        //Añado el corazon
         this.add(this.corazon);
 
+        //Corazon con barrido
+        
         //Pica
         this.pica = this.createPica();
         this.pica.position.x=10;
