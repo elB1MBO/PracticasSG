@@ -6,15 +6,20 @@ class GeomConstr extends THREE.Object3D {
     constructor(gui, titleGUI){
         super();
 
+        this.animacion = true;
+
         this.createGUI(gui, titleGUI);
 
         //Taza
         this.taza = this.createTaza();
+        this.taza.position.x = -15;
+        this.taza.position.z = 10;
         this.add(this.taza);
 
-        //Figura rara
+        //Dado
         this.dado = this.createDado();
-        this.dado.position.y = 20;
+        this.dado.position.x = 15;
+        this.dado.position.z = -10;
         this.add(this.dado);
     }
 
@@ -49,20 +54,44 @@ class GeomConstr extends THREE.Object3D {
         var cubo = new THREE.BoxGeometry(10, 10, 10, 32);
         var esfera = new THREE.SphereGeometry(5.5, 32, 32);
         
-        var cuboMesh = new THREE.Mesh(cubo, new THREE.MeshBasicMaterial({color: 0xD025B7}));
-        var esferaMesh = new THREE.Mesh(esfera, new THREE.MeshBasicMaterial({colro: 0x194D33}));
+        var cuboMesh = new THREE.Mesh(cubo, new THREE.MeshNormalMaterial());
+        var esferaMesh = new THREE.Mesh(esfera, new THREE.MeshBasicMaterial({color: 0x194D33}));
+
+        var cruz = this.createCruz();
 
         var csg = new CSG();
 
         csg.intersect ([cuboMesh, esferaMesh]);
+        csg.subtract ([cruz]);
 
         var dado = csg.toMesh();
         return dado;
     }
 
+    createCruz(){
+        var material = new THREE.MeshBasicMaterial({color: 0x0EF61F});
+
+        var cilindroH = new THREE.CylinderGeometry(3, 3, 12, 32);
+        var cilindroV = new THREE.CylinderGeometry(3, 3, 12, 32);
+        var cilindroV2 = new THREE.CylinderGeometry(3, 3, 12, 32); 
+
+        var cilindroHMesh = new THREE.Mesh(cilindroH, material);
+        var cilindroVMesh = new THREE.Mesh(cilindroV, material);
+        var cilindroV2Mesh = new THREE.Mesh(cilindroV, material);
+        //Roto el cilindro vertical 90º
+        cilindroVMesh.rotation.z = Math.PI/2; 
+        cilindroV2Mesh.rotation.x = Math.PI/2;
+
+        var csg = new CSG();
+
+        csg.union ([cilindroHMesh, cilindroVMesh, cilindroV2Mesh]);
+        var cruz = csg.toMesh();
+        return cruz;
+    }
+
     createGUI(gui, titleGUI){
 
-        this.guiControls = {posicionY : 0}
+        this.guiControls = {posicionY : 0, animacion : true}
 
         var folder = gui.addFolder(titleGUI);
 
@@ -71,13 +100,30 @@ class GeomConstr extends THREE.Object3D {
         .name('PosicionY Taza: ')
         .onChange((value) => this.setPosicionYTaza(value));
         //Cambiar si la taza rota o no   
+        folder.add(this.guiControls, 'animacion', true, false)
+        .name('Animacion: ')
+        .onChange((value) => this.setAnimacion(value));
     }
 
     setPosicionYTaza(value){
-        this.taza.getWorldPosition.y = value;
+        this.taza.position.y = value;
     }
 
-    update(){}
+    setAnimacion(value){
+        this.animacion = value;
+    }
+
+    update(){
+        if (this.animacion == true) {
+            this.taza.rotation.x += 0.01;
+            this.taza.rotation.y += 0.01;
+            this.taza.rotation.z += 0.01;
+
+            this.dado.rotation.x += 0.01;
+            this.dado.rotation.y += 0.01;
+            this.dado.rotation.z += 0.01;
+        }
+    }
 
 }
 

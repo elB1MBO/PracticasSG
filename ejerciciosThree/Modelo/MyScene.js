@@ -7,7 +7,7 @@ import { TrackballControls } from '../libs/TrackballControls.js'
 
 // Clases de mi proyecto
 
-import { GeomConstr } from './GeomConstr.js';
+import { Modelo } from './Modelo.js';
 
  
 /// La clase fachada del modelo
@@ -40,13 +40,13 @@ class MyScene extends THREE.Scene {
     //this.createGround ();
     
     // Y unos ejes. Imprescindibles para orientarnos sobre dónde están las cosas, uno por objeto
-    this.axis = new THREE.AxesHelper(45);
+    this.axis = new THREE.AxesHelper(15);
     this.add(this.axis);
 
     // Por último creamos el modelo.
     // El modelo puede incluir su parte de la interfaz gráfica de usuario. Le pasamos la referencia a 
     // la gui y el texto bajo el que se agruparán los controles de la interfaz que añada el modelo.
-    this.model = new GeomConstr(this.gui, "Controles de cuerpos constructivos");
+    this.model = new Modelo(this.gui, "Controles del modelo");
     this.add (this.model);
 
 
@@ -59,7 +59,7 @@ class MyScene extends THREE.Scene {
     //   Los planos de recorte cercano y lejano
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     // También se indica dónde se coloca
-    this.camera.position.set (100, 0, 100);
+    this.camera.position.set (10, 0, 10);
     // Y hacia dónde mira
     var look = new THREE.Vector3 (0,0,0);
     this.camera.lookAt(look);
