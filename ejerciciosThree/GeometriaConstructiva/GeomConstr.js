@@ -28,7 +28,7 @@ class GeomConstr extends THREE.Object3D {
         //para crear la taza, tenemos primero que cerar 2 cilindros: uno exterior y otro interior, y hacerles la diferencia
         var cilExterior = new THREE.CylinderGeometry(10, 10, 25, 32, 1);
         var cilInterior = new THREE.CylinderGeometry(9, 9, 25, 32, 1);
-        var torus = new THREE.TorusGeometry(5, 1, 24, 24);
+        var torus = new THREE.TorusGeometry(6, 1, 24, 24);
 
         //Posicionamos el cilindro interior para que deje un fondo
         cilInterior.translate(0, 1, 0);

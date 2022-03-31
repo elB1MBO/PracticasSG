@@ -40,10 +40,7 @@ class Barrido extends THREE.Object3D {
         this.pica = this.createPica();
         this.pica.position.x=10;
         this.add(this.pica);
-        //this.add(this.pica);
-        //Trebol
-        
-        //Diamante
+
     }
 
     //Funciones que crearan los palos de la baraja
@@ -60,6 +57,18 @@ class Barrido extends THREE.Object3D {
 
         this.axis = new THREE.AxesHelper(100);
         corazon.add(this.axis);
+
+        // Formar nodos de rotación y translación para la animación
+        //this.nodoRT = new THREE.Mesh(this.cuerpoCorazon, new THREE.MeshNormalMaterial());   // Geometría del corazon
+
+        this.cd = new THREE.Object3D();  // Nodo que mantiene verticalidad y se fija a una distancia x
+        this.cd.position.x = 20; // Transformación fija
+        this.cd.add(this.corazon);
+
+        this.e = new THREE.Object3D();   // Nodo que rota sobre el eje z a la distancia definida
+        this.e.add(this.cd);
+
+        this.add(this.e);
 
         return corazon;
     }
@@ -150,6 +159,9 @@ class Barrido extends THREE.Object3D {
     update(){
         this.corazon.rotation.y += 0.01;
         this.pica.rotation.y += 0.01;
+
+        this.cd.rotation.z += 0.01;
+        this.e.rotation.z += 0.01;
     }
 }
 

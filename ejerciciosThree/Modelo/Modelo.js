@@ -9,6 +9,7 @@ class Modelo extends THREE.Object3D {
         
         //this.createGUI(gui, titleGUI);
 
+
         var materialLoader = new MTLLoader();
         var objectLoader = new OBJLoader();
 
@@ -130,6 +131,8 @@ class Modelo extends THREE.Object3D {
      *  meshClickado.userData.caminar();
      * 
      * Feedback: añadir una transparencia al objeto seleccionado, por ejemplo
+     * 
+     * 
      * 
      */
 
