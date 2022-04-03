@@ -6,98 +6,92 @@ class Pendulo extends THREE.Object3D {
 
         this.createGUI(gui, titleGUI);
 
-        this.altura = 5.0;
-        this.ancho = 1.0;
+        /*Queremos 2 péndulos: uno detrás, cuya parte central cambia de longitud,
+        y otro delante, fijado a la parte roja del primero, en la que puede cambiar
+        de posición y de tamaño
+        */
+       this.hv = 4.0; //altura verde
+       this.hr = 5.0; //altura rojo
 
-        this.penduloSuperior = this.createPenduloSuperior();
-        this.penduloInferior = this.createPenduloInferior();
+        this.penduloPrincipal = this.createPenduloPrincipal();
+        this.penduloSecundario = this.createPenduloSecundario();
 
-        this.penduloInferior.position.y = -this.altura/2;
-        //this.penduloSuperior.position.y = -this.altura/2;
+        this.add(this.penduloPrincipal);
 
-        this.penduloSuperior.scale.y = this.guiControls.escalaSuperior;
-
-        this.penduloInferior.scale.y = this.guiControls.escalaInferior;
-        this.penduloInferior.rotation.z = this.guiControls.rotacionInferior;
-        this.penduloInferior.position.y = -this.altura*this.guiControls.escalaSuperior;
-
-        this.rotation.z = this.guiControls.rotacionSuperior;
-
-        this.add(this.penduloSuperior);
-        this.add(this.penduloInferior);
     }
 
-    createPenduloSuperior(){
-        var material = new THREE.MeshStandardMaterial({color: 0xFDFF00});
-        var geom = new THREE.BoxGeometry(this.ancho, this.altura, this.ancho);
+    createPenduloPrincipal(){
+        //Creo los materiales
+        var materialVerde = new THREE.MeshStandardMaterial({color: 0x27C61F})
+        var materialRojo = new THREE.MeshStandardMaterial({color: 0xB61114})
+        var materialCilindro = new THREE.MeshStandardMaterial({color: 0xC9A90C})
+        //Creo las geometrias necesarias
+        var geometria = new THREE.BoxGeometry(4, this.hv, 2);
+        var geometriaInf = new THREE.BoxGeometry(4, this.hv, 2);
+        var geometriaRojo = new THREE.BoxGeometry(4, this.hr, 2);
+        var geometriaCilindro = new THREE.CylinderGeometry(1, 1, 1, 6);
+        //Primero roto el cilindro
+        geometriaCilindro.rotateX(Math.PI/2);
+        //Traslado la geometria de la parte roja y del cilindro
+        geometriaCilindro.translate(0, 0, 1);
+        //Traslado la geometria del rojo para que su centro esté en su borde superior   
+        geometriaRojo.translate(0, -this.hr/2, 0);
+        geometriaInf.translate(0, -this.hv, 0);
 
-        this.pendSup = new THREE.Mesh(geom, material);
+        this.parteVerdeSup = new THREE.Mesh(geometria, materialVerde);
+        this.parteRoja = new THREE.Mesh(geometriaRojo, materialRojo);
+        this.parteVerdeInf = new THREE.Mesh(geometriaInf, materialVerde);
+        var cilindro = new THREE.Mesh(geometriaCilindro, materialCilindro);
 
-        return this.pendSup;
+        //Transformaciones de la parte roja:
+        this.parteRoja.position.y = -this.hv/2;
+        this.parteRoja.scale.y = this.guiControls.longitudRojo;
+        //Traslado la parte inferior segun la longitud de la parte roja
+        this.parteVerdeInf.position.y = -this.hr*this.guiControls.longitudRojo;
+
+        var pendulo = new THREE.Object3D();
+        pendulo.add(this.parteVerdeSup);
+        pendulo.add(this.parteRoja);
+        pendulo.add(this.parteVerdeInf);
+        pendulo.add(cilindro);
+
+        return pendulo;
+
     }
-    createPenduloInferior(){
-        var material = new THREE.MeshStandardMaterial({color: 0x004FFA});
-        var geom = new THREE.BoxGeometry(this.ancho, this.altura, this.ancho);
 
-        this.pendInf = new THREE.Mesh(geom, material);
+    createPenduloSecundario(){
 
-        return this.pendInf;
     }
 
     createGUI(gui, titleGUI){
-        //Controles para el tamaño, la orientación y la posición de la caja
         this.guiControls = {
-            escalaSuperior : 1.0,
-            rotacionSuperior : 0.0,
-            escalaInferior : 1.0,
-            rotacionInferior : 0.0,
+            longitudRojo : 1.0,
+            rotacionPenduloP : 0.0,
 
-            //Un botón para dejarlo todo en su posición inicial
-            //Cuando se pulse se ejecutará esta función
+
+            //Boton de reset
             reset : () => {
-                this.guiControls.escalaSuperior = 1.0;
-                this.guiControls.rotacionSuperior = 0.0;
-                this.guiControls.escalaInferior = 1.0;
-                this.guiControls.rotacionInferior = 0.0;
+                this.guiControls.longitudRojo = 1.0;
+                this.guiControls.rotacionPenduloP = 0.0;
             }
-        }
+        }        
 
-        //Añadir la carpeta con los controles
-        var folder = gui.addFolder (titleGUI);
-        //Y añadimos los controles a la interfaz
-        //El método listen permite que cuado se cambia el valor de una variable 
-        //en el código, la barra de la interfaz se actualice
-        folder.add(this.guiControls, 'escalaSuperior', 1.0, 2.0, 0.1)
-            .name('Escala pendulo superior: ').listen();
-        folder.add(this.guiControls, 'rotacionSuperior', -0.5, 0.5, 0.1)
-            .name('Rotacion superior: ').listen();
+        //Crear las carpetas
+        var folder1 = gui.addFolder('Primer péndulo');
+        var folder2 = gui.addFolder('Segundo péndulo');
+        var folderReset = gui.addFolder('Reset');
 
-        folder.add(this.guiControls, 'escalaInferior', 1.0, 2.0, 0.1)
-            .name('Escala inferior: ').listen();
-        folder.add(this.guiControls, 'rotacionInferior', -0.5, 0.5, 0.1)
-            .name('Rotacion inferior: ').listen();
-        //Y el boton de reset
-        folder.add(this.guiControls, 'reset').name(' RESET ');
+        folder1.add (this.guiControls, 'longitudRojo', 1.0, 2.0, 0.1).name('Longitud: ').listen();
+        folder1.add (this.guiControls, 'rotacionPenduloP', -0.5, 0.5, 0.1).name('Rotación: ').listen();
+
+        folderReset.add(this.guiControls, 'reset').name('RESET');
 
     }
 
     update(){ 
-        /* ORDEN en que se aplican, sin importar el orden de cómo se escriban las órdenes:
-            Primero: Escalado
-            Segundo: rotacion en Z
-            Tercero: rotacion en Y
-            Cuarto: rotacion en X
-            Por último: traslación
-        */
-
-        this.penduloSuperior.scale.y = this.guiControls.escalaSuperior;
-
-        this.penduloInferior.scale.y = this.guiControls.escalaInferior;
-        this.penduloInferior.rotation.z = this.guiControls.rotacionInferior;
-        //Queremos que baje el tamaño del pedulo superior, es decir, 10 * la escala asignada
-        this.penduloInferior.position.y = -this.altura*this.guiControls.escalaSuperior;
-        //Queremos que roten los 2, entonces rotamos this
-        this.rotation.z = this.guiControls.rotacionSuperior;
+        this.parteRoja.scale.y = this.guiControls.longitudRojo;
+        this.parteVerdeInf.position.y = -this.hr*this.guiControls.longitudRojo;
+        this.penduloPrincipal.rotation.z = this.guiControls.rotacionPenduloP;
     }
 
 }

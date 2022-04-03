@@ -73,8 +73,7 @@ class GeomConstr extends THREE.Object3D {
 
         var cilindroH = new THREE.CylinderGeometry(3, 3, 12, 32);
         var cilindroV = new THREE.CylinderGeometry(3, 3, 12, 32);
-        var cilindroV2 = new THREE.CylinderGeometry(3, 3, 12, 32); 
-
+        
         var cilindroHMesh = new THREE.Mesh(cilindroH, material);
         var cilindroVMesh = new THREE.Mesh(cilindroV, material);
         var cilindroV2Mesh = new THREE.Mesh(cilindroV, material);
