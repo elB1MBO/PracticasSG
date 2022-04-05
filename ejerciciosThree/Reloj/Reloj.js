@@ -14,7 +14,6 @@ class Reloj extends THREE.Object3D {
         }
 
         this.manecilla = this.createManecilla();
-        //this.manecilla.rotation.y -= 0.01*this.guiControls.velocidad;
 
         this.add(this.manecilla);
     }
