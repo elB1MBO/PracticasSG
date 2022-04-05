@@ -13,7 +13,9 @@ class Recorrido extends THREE.Object3D {
         textureUp.repeat.set(0.1, 1);
         var material = new THREE.MeshPhongMaterial ({map: textureUp});
         var geometria = new THREE.ConeGeometry(2, 5, 3);
+        geometria.rotateX(Math.PI/2);
         this.figura = new THREE.Mesh(geometria, material);
+        //this.figura.rotation.z = Math.PI/2;
         
         //Variables locales con los parámetros y valores a usar
         var origen = {x: 0, y: 30};
@@ -46,11 +48,11 @@ class Recorrido extends THREE.Object3D {
 
     createPath(){
         this.spline = new THREE.CatmullRomCurve3([
-            new THREE.Vector3(-5,5,-5), 
-            new THREE.Vector3(2,5,2),
-            new THREE.Vector3(2,5,5),
-            new THREE.Vector3(-2,5,-2),
-            new THREE.Vector3(5,5,-2)
+            new THREE.Vector3(-10,10,-10), 
+            new THREE.Vector3(4,10,4),
+            new THREE.Vector3(4,10,10),
+            new THREE.Vector3(-4,10,-4),
+            new THREE.Vector3(10,10,-4)
         ], true);
         //Ademas del array de puntos, se puede añadir un segundo parámetro (true) para obtener un spline cerrado
         
