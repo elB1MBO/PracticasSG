@@ -47,7 +47,7 @@ class Barrido extends THREE.Object3D {
     createCorazon(){
         var figuraCorazon = this.createShapeCorazon(); //Método que crea y devuelve un shape
 
-        this.opcionesExtrude = { depth: 5, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 0, bevelThickness: 1 };
+        this.opcionesExtrude = { depth: 5, bevelEnabled: true, bevelSegments: 10, steps: 2, bevelSize: 5, bevelThickness: 5 };
 
         this.cuerpoCorazon = new THREE.ExtrudeGeometry( figuraCorazon, this.opcionesExtrude );
 
@@ -88,10 +88,6 @@ class Barrido extends THREE.Object3D {
         pica.add(pie);
         return pica;
     }
-    createTrebol(){
-
-    }
-    
 
 
     createShapeCorazon(){
@@ -105,6 +101,18 @@ class Barrido extends THREE.Object3D {
         heartShape.bezierCurveTo(25,25,50,35,50,10);
         heartShape.bezierCurveTo(50,10,50,-25,25,-25);
         heartShape.bezierCurveTo(5,-25,0,0,0,0);
+
+        var hole = new THREE.Shape();
+        hole.absellipse(12, 24, 2, 3, 0, Math.PI*2);
+        heartShape.holes.push(hole);
+
+        var hole2 = new THREE.Shape();
+        hole2.absellipse(-12, 24, 2, 3, 0, Math.PI*2);
+        heartShape.holes.push(hole2);
+
+        var boca = new THREE.Shape();
+        boca.absarc(0, 10, 4, Math.PI, Math.PI/4);
+        heartShape.holes.push(boca);
 
         return heartShape;
         
