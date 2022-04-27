@@ -9,6 +9,7 @@ import { TrackballControls } from '../libs/TrackballControls.js'
 
 import { Tornillo } from './Tornillo.js';
 import { Tuerca } from './Tuerca.js';
+import { Bimbot } from './Bimbot.js';
 
 /// La clase fachada del modelo
 /**
@@ -48,7 +49,7 @@ class MyScene extends THREE.Scene {
     // El modelo puede incluir su parte de la interfaz gráfica de usuario. Le pasamos la referencia a 
     // la gui y el texto bajo el que se agruparán los controles de la interfaz que añada el modelo.
     //this.model = new Tornillo(this.gui, "Mi Tornillo");
-    this.model = new Tuerca(this.gui, "Mi Tuerca");
+    this.model = new Bimbot(this.gui, "Bimbot");
     this.add (this.model);
   }
   
@@ -59,7 +60,7 @@ class MyScene extends THREE.Scene {
     //   Los planos de recorte cercano y lejano
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     // También se indica dónde se coloca
-    this.camera.position.set (10, 5, 10);
+    this.camera.position.set (0, 8, 20);
     // Y hacia dónde mira
     var look = new THREE.Vector3 (0,0,0);
     this.camera.lookAt(look);

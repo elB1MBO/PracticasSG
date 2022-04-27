@@ -1,6 +1,7 @@
 import * as THREE from '../libs/three.module.js'
 import {CSG} from '../libs/CSG-v2.js'
 import {CilindroBarrido} from './CilindroBarrido.js'
+import * as TWEEN from '../libs/tween.esm.js'
 
 class Tornillo extends THREE.Object3D {
     constructor(gui, titleGUI){
@@ -9,11 +10,11 @@ class Tornillo extends THREE.Object3D {
         this.reloj = new THREE.Clock();
 
         //Atributo velocidad:
-        this.velocidad = 0.5;
+        this.velocidad = 0.75;
         //Radio de la cabeza del tornillo
         this.radioCabeza = 3;
 
-        this.createGUI(gui, titleGUI);
+        //this.createGUI(gui, titleGUI);
         var cuerpo = new CilindroBarrido();
         cuerpo.position.y = -2.5;
         var cabeza = this.createCabeza();
@@ -21,6 +22,7 @@ class Tornillo extends THREE.Object3D {
         var csg = new CSG();
         csg.union([cabeza, cuerpo]);
         this.tornillo = csg.toMesh();
+        this.upDown();
         this.add(this.tornillo);
     }
 
@@ -66,11 +68,36 @@ class Tornillo extends THREE.Object3D {
         var folder = gui.addFolder(titleGUI);
     }
 
-    update(){
-        var segs = this.reloj.getDelta(); //Segundos desde la ultima llamada
-        this.tornillo.rotation.x += this.velocidad * segs;
-        this.tornillo.rotation.x += this.velocidad * segs;
-        this.tornillo.rotation.z += this.velocidad * segs;
+    //Animacion de subir y bajar
+    upDown(){
+        var origen = {x: 0, y: -5};
+        var destino = {x: 0, y: 5};
+        var movimiento = new TWEEN.Tween(origen)
+            .to(destino, 2000)
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .onUpdate(() => {
+                this.tornillo.position.x = origen.x;
+                this.tornillo.position.y = origen.y;
+            })
+            .onComplete(() => {
+                //origen.y = -10;
+            })
+            .repeat(Infinity)
+            .yoyo(true);
+        
+        movimiento.start();
+        //TWEEN.update();
+        //TWEEN.add(movimiento);
+    }
+
+    update(){ //dt=delta time
+        var dt = this.reloj.getDelta(); //Segundos desde la ultima llamada
+        this.tornillo.rotation.x += this.velocidad * dt;
+        this.tornillo.rotation.x += this.velocidad * dt;
+        this.tornillo.rotation.z += this.velocidad * dt;
+
+        //this.upDown(this.velocidad*dt);
+        TWEEN.update();
     }
 }
 

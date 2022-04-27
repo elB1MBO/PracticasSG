@@ -5,16 +5,18 @@ class Tronco extends THREE.Object3D {
     constructor(gui, titleGUI){
         super();
 
+        this.velocidad = 2;  //Velocidad animacion del tronco
+
         this.radioTronco = 1;
         this.largoTronco = 14;
 
-        this.createGUI(gui, titleGUI);
+        //this.createGUI(gui, titleGUI);
 
         this.tronco = this.createTronco();
         this.pinchos = this.createPinchos();
         
-        this.add(this.tronco);
-        this.add(this.pinchos);
+        /* this.add(this.tronco);
+        this.add(this.pinchos); */
 
         var csg = new CSG();
 
@@ -23,7 +25,7 @@ class Tronco extends THREE.Object3D {
         this.trampa = csg.toMesh();
         //Si hago la union de tronco y pinchos como unico objeto,
         //la textura del pincho cambia a la del tronco.
-        //this.add(this.trampa);
+        this.add(this.trampa);
     }
 
     createTronco(){
@@ -91,6 +93,10 @@ class Tronco extends THREE.Object3D {
 
     createGUI(gui, titleGUI){
         var folder = gui.addFolder(titleGUI);
+    }
+
+    update(dt){
+        this.trampa.rotation.z -= this.velocidad*dt;
     }
 }
 
