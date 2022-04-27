@@ -2,7 +2,7 @@ import * as THREE from '../libs/three.module.js'
 import {CSG} from '../libs/CSG-v2.js'
 
 class Tronco extends THREE.Object3D {
-    constructor(gui, titleGUI){
+    constructor(){
         super();
 
         this.velocidad = 2;  //Velocidad animacion del tronco
@@ -10,22 +10,17 @@ class Tronco extends THREE.Object3D {
         this.radioTronco = 1;
         this.largoTronco = 14;
 
-        //this.createGUI(gui, titleGUI);
+        //Relativo a los pinchos
+        this.numFilas = 3;
+        this.pinchosPorFila = 4;
 
         this.tronco = this.createTronco();
+
         this.pinchos = this.createPinchos();
-        
-        /* this.add(this.tronco);
-        this.add(this.pinchos); */
 
-        var csg = new CSG();
+        this.tronco.add(this.pinchos);
 
-        csg.union([this.tronco, this.pinchos]);
-
-        this.trampa = csg.toMesh();
-        //Si hago la union de tronco y pinchos como unico objeto,
-        //la textura del pincho cambia a la del tronco.
-        this.add(this.trampa);
+        this.add(this.tronco);
     }
 
     createTronco(){
@@ -43,51 +38,28 @@ class Tronco extends THREE.Object3D {
 
     createPinchos(){
         var textura = new THREE.TextureLoader().load('../imgs/textura-metal2.jpg');
-        //var materialPincho = new THREE.MeshStandardMaterial({color: 0x505452});
         var materialPincho = new THREE.MeshPhongMaterial({map: textura});
         var geomPincho = new THREE.TetrahedronGeometry(0.6, 0);
+        //Hay que orientar un poco el tetraedro
         geomPincho.rotateZ(Math.PI/4);
         geomPincho.rotateX(-Math.PI/5);
         geomPincho.rotateY(Math.PI/2);
         geomPincho.translate(0, this.radioTronco, 0);
-        var pincho = new THREE.Mesh(geomPincho, materialPincho);
-        var pincho2 = new THREE.Mesh(geomPincho, materialPincho);
-        var pincho3 = new THREE.Mesh(geomPincho, materialPincho);
-        var pincho4 = new THREE.Mesh(geomPincho, materialPincho);
-        var pincho5 = new THREE.Mesh(geomPincho, materialPincho);
-        
-        pincho2.position.z = 4;
-        pincho3.rotation.z = Math.PI/2;
-        pincho3.position.z = 4;
-        pincho4.rotation.z = Math.PI;
-        pincho4.position.z = 4;
-        pincho5.rotation.z = -Math.PI/2;
-        pincho5.position.z = 4;
 
         var pinchoOriginal = new THREE.Mesh(geomPincho, materialPincho);
         var csg = new CSG();
-       /*  for (let i = 0; i < 5; i++) {
-            for(let j = 1; j <= 4; j++){
-                var pincho = new THREE.Mesh(geomPincho, materialPincho);
-                switch (j) {
-                    case 1:
-                        pincho.position.z = this.largoTronco/4;
-                        break;
-                    case 2:
-                        pincho.rotation.z = -Math.PI/2;
-                        pincho.position.z = this.largoTronco/4;
-                        break;
-                    default:
-                        break;
-                }
+        for (let i = 0; i < this.numFilas; i++) { //i filas de pinchos
+            for(let j = 1; j <= this.pinchosPorFila; j++){    //De j pinchos cada una
+                var pinchoj = new THREE.Mesh(geomPincho, materialPincho);
+                pinchoj.position.z = this.largoTronco/this.numFilas*i;
+                pinchoj.rotation.z = Math.PI/2*j;
+                //Una vez colocado el nuevo pincho, lo uno al csg de pinchos
+                csg.union([pinchoOriginal, pinchoj]);
             }
-            //csg.union([pinchoOriginal, pincho]);
-        } */
-
-        csg.union([pincho, pincho2, pincho3, pincho4, pincho5]);
-
+        }
+        
         var pinchos = csg.toMesh();
-
+        pinchos.position.z = -this.largoTronco/this.numFilas;
         return pinchos;
     }
 
@@ -96,7 +68,7 @@ class Tronco extends THREE.Object3D {
     }
 
     update(dt){
-        this.trampa.rotation.z -= this.velocidad*dt;
+        this.tronco.rotation.z -= this.velocidad*dt;
     }
 }
 

@@ -3,6 +3,7 @@ import { GLTFLoader } from '../libs/GLTFLoader.js'
 import { Tornillo } from './Tornillo.js'
 import { Tuerca } from './Tuerca.js'
 import { Tronco } from './Tronco.js'
+import { TrampaPinchos } from './TrampaPinchos.js'
 import * as TWEEN from '../libs/tween.esm.js'
 
  
@@ -29,10 +30,12 @@ class Bimbot extends THREE.Object3D {
     this.tornillo = this.importTornillo();
     this.tuerca = this.importTuerca();
     this.tronco = this.importTronco();
+    this.trampaP = this.importTrampa();
 
     this.add(this.tornillo);
     this.add(this.tuerca);
     this.add(this.tronco);
+    this.add(this.trampaP);
 
     var geom = new THREE.BoxGeometry(2, 4.4, 2);
     var material = new THREE.MeshNormalMaterial();
@@ -71,6 +74,15 @@ class Bimbot extends THREE.Object3D {
     tronco.position.x = -3;
     tronco.position.y = 1;
     return tronco;
+  }
+  //TRAMPA PINCHOS
+  importTrampa(){
+    var trampa = new TrampaPinchos();
+    trampa.scale.x = 0.8;
+    trampa.scale.y = 0.8;
+    trampa.scale.z = 0.8;
+    trampa.position.z = 4;
+    return trampa;
   }
 
   // ******* ******* ******* ******* ******* ******* ******* 
