@@ -10,6 +10,7 @@ import { TrackballControls } from '../libs/TrackballControls.js'
 import { Tornillo } from './Tornillo.js';
 import { Tuerca } from './Tuerca.js';
 import { Bimbot } from './Bimbot.js';
+import {TrampaPinchos} from './TrampaPinchos.js';
 
 /// La clase fachada del modelo
 /**
@@ -49,7 +50,7 @@ class MyScene extends THREE.Scene {
     // El modelo puede incluir su parte de la interfaz gráfica de usuario. Le pasamos la referencia a 
     // la gui y el texto bajo el que se agruparán los controles de la interfaz que añada el modelo.
     //this.model = new Tornillo(this.gui, "Mi Tornillo");
-    this.model = new Bimbot(this.gui, "Bimbot");
+    this.model = new Bimbot(this.gui, "BIMBOT");
     this.add (this.model);
   }
   

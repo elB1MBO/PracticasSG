@@ -6,19 +6,12 @@ class TrampaPinchos extends THREE.Object3D {
         super();
 
         this.alturaBase = 0.3;
-        this.ladoBase = 4;
-
-        this.radioTronco = 1;
-        this.largoTronco = 14;
-
-        //Relativo a los pinchos
-        this.numFilas = 3;
-        this.pinchosPorFila = 4;
+        this.ladoBase = 5;
 
         this.trampa = this.createBase();
-        this.pinchos = this.createPinchos();
+        this.pinchosP = this.createPinchos();
         
-        this.trampa.add(this.pinchos);
+        this.trampa.add(this.pinchosP);
         this.add(this.trampa);
     }
 
@@ -35,20 +28,25 @@ class TrampaPinchos extends THREE.Object3D {
     createPinchos(){
         var textura = new THREE.TextureLoader().load('../imgs/textura-metal1.jpg');
         var material = new THREE.MeshPhongMaterial({map: textura});
-        var geom = new THREE.ConeGeometry(0.2, 1);
+        var geomCono = new THREE.TetrahedronGeometry(0.6, 0);
 
-        geom.translate(0, this.alturaBase*2, 0);
+        geomCono.rotateZ(Math.PI/4);
+        geomCono.rotateX(-Math.PI/5);
+        geomCono.rotateY(Math.PI/2);
+        geomCono.scale(1, 1.5, 1);
+        geomCono.translate(0, this.alturaBase, 0);
 
-        var pinchoOriginal = new THREE.Mesh(geom, material);
+        var pinchoOriginal = new THREE.Mesh(geomCono, material);
         var csg = new CSG();
-        for(let i = 0; i < this.ladoBase; i++){       //Fila
-            for(let j = 0; j < this.ladoBase; j++){   //Columna
-                var pinchoj = new THREE.Mesh(geom, material);
+        for(let i = 1; i < this.ladoBase; i++){       //Fila
+            for(let j = 1; j < this.ladoBase; j++){   //Columna
+                var pinchoj = new THREE.Mesh(geomCono, material);
                 pinchoj.position.z = i;
                 pinchoj.position.x = j;
                 csg.union([pinchoOriginal, pinchoj]);
             }
         }
+        csg.subtract([pinchoOriginal]);
         var trampa = csg.toMesh();
         trampa.position.x = -this.ladoBase/2;
         trampa.position.z = -this.ladoBase/2;
@@ -67,11 +65,11 @@ class TrampaPinchos extends THREE.Object3D {
 
         var pinchoOriginal = new THREE.Mesh(geomPincho, materialPincho);
         var csg = new CSG();
-        for (let i = 0; i < this.numFilas; i++) { //i filas de pinchos
-            for(let j = 1; j <= this.pinchosPorFila; j++){    //De j pinchos cada una
+        for (let i = 0; i < this.ladoBase; i++) { //i filas de pinchos
+            for(let j = 1; j <= this.ladoBase; j++){    //De j pinchos cada una
                 var pinchoj = new THREE.Mesh(geomPincho, materialPincho);
-                pinchoj.position.z = this.largoTronco/this.numFilas*i;
-                pinchoj.rotation.z = Math.PI/2*j;
+                pinchoj.position.z = this.ladoBase/this.ladoBase*i;
+                //pinchoj.rotation.z = Math.PI/2*j;
                 //Una vez colocado el nuevo pincho, lo uno al csg de pinchos
                 csg.union([pinchoOriginal, pinchoj]);
             }

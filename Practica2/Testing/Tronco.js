@@ -44,6 +44,7 @@ class Tronco extends THREE.Object3D {
         geomPincho.rotateZ(Math.PI/4);
         geomPincho.rotateX(-Math.PI/5);
         geomPincho.rotateY(Math.PI/2);
+        geomPincho.scale(1.2, 1.2, 1.2);
         geomPincho.translate(0, this.radioTronco, 0);
 
         var pinchoOriginal = new THREE.Mesh(geomPincho, materialPincho);
