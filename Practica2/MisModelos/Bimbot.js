@@ -1,10 +1,14 @@
 import * as THREE from '../libs/three.module.js'
 import { GLTFLoader } from '../libs/GLTFLoader.js'
+import { Tornillo } from './Tornillo.js'
+import { Tuerca } from './Tuerca.js'
+import { Tronco } from './Tronco.js'
+import { TrampaPinchos } from './TrampaPinchos.js'
 import * as TWEEN from '../libs/tween.esm.js'
 
  
 class Bimbot extends THREE.Object3D {
-  constructor() {
+  constructor(gui,str) {
     super();
     this.clock = new THREE.Clock();
     var that = this;
@@ -16,15 +20,71 @@ class Bimbot extends THREE.Object3D {
       var animations = gltf.animations;
       // No olvidarse de colgar el modelo del Object3D de esta instancia de la clase (this)
       that.add( model );
-      console.log (animations);
+//       console.log (animations);
       that.createActions(model,animations);
       // Se crea la interfaz de usuario que nos permite ver las animaciones que tiene el modelo y qué realizan
-      //that.createGUI (gui, str);
+      that.createGUI (gui, str);
     }, undefined, ( e ) => { console.error( e ); }
     );
 
+    this.tornillo = this.importTornillo();
+    this.tuerca = this.importTuerca();
+    this.tronco = this.importTronco();
+    this.trampaP = this.importTrampa();
+
+    this.add(this.tornillo);
+    this.add(this.tuerca);
+    this.add(this.tronco);
+    this.add(this.trampaP);
+
+    var geom = new THREE.BoxGeometry(2, 4.4, 2);
+    var material = new THREE.MeshNormalMaterial();
+    var caja = new THREE.Mesh(geom, material);
+    caja.position.y = 2.2;
+    //this.add(caja);
   }
- 
+  
+  // ******* ******* Importar y colocar objetos externos ******* ******* 
+  //TORNILLO
+  importTornillo(){
+    var tornillo = new Tornillo();
+    tornillo.scale.x = 0.2;
+    tornillo.scale.y = 0.2;
+    tornillo.scale.z = 0.2;
+    tornillo.position.x = 3;
+    tornillo.position.y = 2.5;
+    return tornillo;
+  }
+  //TUERCA
+  importTuerca(){
+    var tuerca = new Tuerca();
+    tuerca.scale.x = 0.2;
+    tuerca.scale.y = 0.2;
+    tuerca.scale.z = 0.2;
+    tuerca.position.x = 6;
+    tuerca.position.y = 2.5;
+    return tuerca;
+  }
+  //TRONCO
+  importTronco(){
+    var tronco = new Tronco();
+    tronco.scale.x = 0.6;
+    tronco.scale.y = 0.6;
+    tronco.scale.z = 0.6;
+    tronco.position.x = -3;
+    tronco.position.y = 1;
+    return tronco;
+  }
+  //TRAMPA PINCHOS
+  importTrampa(){
+    var trampa = new TrampaPinchos();
+    trampa.scale.x = 0.8;
+    trampa.scale.y = 0.8;
+    trampa.scale.z = 0.8;
+    trampa.position.z = 4;
+    return trampa;
+  }
+
   // ******* ******* ******* ******* ******* ******* ******* 
   
   createActions (model, animations) {
@@ -65,7 +125,36 @@ class Bimbot extends THREE.Object3D {
     
   }
   
-  
+  createGUI (gui, str) {
+    // La interfaz de usuario se crea a partir de la propia información que se ha
+    // cargado desde el archivo  gltf
+    this.guiControls = {
+      // En este campo estará la list de animaciones del archivo
+      current : 'Animaciones',
+      // Este campo nos permite ver cada animación una sola vez o repetidamente
+      repeat : false,
+      // Velocidad de la animación
+      speed : 1.0
+    }
+    
+    // Creamos y añadimos los controles de la interfaz de usuario
+    var folder = gui.addFolder (str);
+    var repeatCtrl = folder.add (this.guiControls, 'repeat').name('Repetitivo: ');
+    var clipCtrl = folder.add (this.guiControls, 'current').options(this.clipNames).name('Animaciones: ');
+    var speedCtrl = folder.add (this.guiControls, 'speed', -2.0, 2.0, 0.1).name('Speed: ');
+//     var that = this;
+    // Cada vez que uno de los controles de la interfaz de usuario cambie, 
+    //    llamamos al método que lance la animación elegida
+    clipCtrl.onChange (() => {
+      this.fadeToAction (this.guiControls.current, this.guiControls.repeat, this.guiControls.speed);
+    });
+    repeatCtrl.onChange (() => {
+      this.fadeToAction (this.guiControls.current, this.guiControls.repeat, this.guiControls.speed);
+    });
+    speedCtrl.onChange ((value) => {
+      this.activeAction.setEffectiveTimeScale(this.guiControls.speed);
+    });
+  }
   
   // ******* ******* ******* ******* ******* ******* ******* 
   
@@ -105,6 +194,11 @@ class Bimbot extends THREE.Object3D {
     // Hay que pedirle al mixer que actualice las animaciones que controla
     var dt = this.clock.getDelta();
     if (this.mixer) this.mixer.update (dt);
+
+    this.tornillo.update(dt);
+    this.tuerca.update(dt);
+    this.tronco.update(dt);
+    this.trampaP.update(dt);
 
     TWEEN.update(dt);
   }

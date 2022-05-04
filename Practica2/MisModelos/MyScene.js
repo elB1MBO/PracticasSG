@@ -6,8 +6,11 @@ import { GUI } from '../libs/dat.gui.module.js'
 import { TrackballControls } from '../libs/TrackballControls.js'
 
 // Clases de mi proyecto
+
+import { Tornillo } from './Tornillo.js';
+import { Tuerca } from './Tuerca.js';
 import { Bimbot } from './Bimbot.js';
-import {main} from './main.js';
+import {TrampaPinchos} from './TrampaPinchos.js';
 
 /// La clase fachada del modelo
 /**
@@ -32,6 +35,9 @@ class MyScene extends THREE.Scene {
     // Tras crear cada elemento se añadirá a la escena con   this.add(variable)
     this.createLights ();
     
+    // Tendremos una cámara con un control de movimiento con el ratón
+    this.createCamera ();
+    
     // Un suelo 
     this.createGround ();
     
@@ -44,22 +50,20 @@ class MyScene extends THREE.Scene {
     // El modelo puede incluir su parte de la interfaz gráfica de usuario. Le pasamos la referencia a 
     // la gui y el texto bajo el que se agruparán los controles de la interfaz que añada el modelo.
     //this.model = new Tornillo(this.gui, "Mi Tornillo");
-    this.model = new main(this.gui, "BIMBOT");
-
-    // Tendremos una cámara con un control de movimiento con el ratón
-    this.createCamera ();
-
+    this.model = new Bimbot(this.gui, "BIMBOT");
     this.add (this.model);
   }
   
   createCamera () {
-    //Indicamos el modelo quedebe seguir:
-    var bimbot = this.model.getBimbot();
+    // Para crear una cámara le indicamos
+    //   El ángulo del campo de visión vértical en grados sexagesimales
+    //   La razón de aspecto ancho/alto
+    //   Los planos de recorte cercano y lejano
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     // También se indica dónde se coloca
-    this.camera.position.set(bimbot.position.x, bimbot.position.y+10, bimbot.position.z-20);
+    this.camera.position.set (0, 8, 20);
     // Y hacia dónde mira
-    var look = bimbot.position;
+    var look = new THREE.Vector3 (0,0,0);
     this.camera.lookAt(look);
     this.add (this.camera);
     
@@ -78,7 +82,7 @@ class MyScene extends THREE.Scene {
     // El suelo es un Mesh, necesita una geometría y un material.
     
     // La geometría es una caja con muy poca altura
-    var geometryGround = new THREE.BoxGeometry (100,0.2,100);
+    var geometryGround = new THREE.BoxGeometry (50,0.2,50);
     
     // El material se hará con una textura de madera
     var texture = new THREE.TextureLoader().load('../imgs/wood.jpg');

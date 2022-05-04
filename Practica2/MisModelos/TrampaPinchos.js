@@ -1,9 +1,13 @@
 import * as THREE from '../libs/three.module.js'
 import {CSG} from '../libs/CSG-v2.js'
+import * as TWEEN from '../libs/tween.esm.js'
 
 class TrampaPinchos extends THREE.Object3D {
     constructor() {
         super();
+
+        this.reloj = new THREE.Clock();
+        this.velocidad = 0.75;
 
         this.alturaBase = 0.3;
         this.ladoBase = 5;
@@ -12,6 +16,7 @@ class TrampaPinchos extends THREE.Object3D {
         this.pinchosP = this.createPinchos();
         
         this.trampa.add(this.pinchosP);
+        this.upDown();
         this.add(this.trampa);
     }
 
@@ -53,36 +58,41 @@ class TrampaPinchos extends THREE.Object3D {
         return trampa;
     }
 
-    /* createPinchos(){
-        var textura = new THREE.TextureLoader().load('../imgs/textura-metal2.jpg');
-        var materialPincho = new THREE.MeshPhongMaterial({map: textura});
-        var geomPincho = new THREE.TetrahedronGeometry(0.6, 0);
-        //Hay que orientar un poco el tetraedro
-        geomPincho.rotateZ(Math.PI/4);
-        geomPincho.rotateX(-Math.PI/5);
-        geomPincho.rotateY(Math.PI/2);
-        geomPincho.translate(0, this.radioTronco, 0);
-
-        var pinchoOriginal = new THREE.Mesh(geomPincho, materialPincho);
-        var csg = new CSG();
-        for (let i = 0; i < this.ladoBase; i++) { //i filas de pinchos
-            for(let j = 1; j <= this.ladoBase; j++){    //De j pinchos cada una
-                var pinchoj = new THREE.Mesh(geomPincho, materialPincho);
-                pinchoj.position.z = this.ladoBase/this.ladoBase*i;
-                //pinchoj.rotation.z = Math.PI/2*j;
-                //Una vez colocado el nuevo pincho, lo uno al csg de pinchos
-                csg.union([pinchoOriginal, pinchoj]);
-            }
-        }
-        
-        var pinchos = csg.toMesh();
-        pinchos.position.z = -this.largoTronco/this.numFilas;
-        return pinchos;
-    } */
-
     createGUI(){}
 
-    update(){}
+    //Animacion de subir y bajar
+    upDown(){
+        var origen = {x: -this.ladoBase/2, y: 0.01};
+        var destino = {x: -this.ladoBase/2, y: -1.5};
+        var movimiento = new TWEEN.Tween(origen)
+            .to(destino, 2000)
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .onUpdate(() => {
+                this.pinchosP.position.x = origen.x;
+                this.pinchosP.position.y = origen.y;
+            })
+            .onComplete(() => {
+                //origen.y = -10;
+            })
+            .repeat(Infinity)
+            .yoyo(true);
+        
+        movimiento.start();
+        //TWEEN.update();
+        //TWEEN.add(movimiento);
+    }
+
+    update(dt){
+        //var dt = this.reloj.getDelta(); //Segundos desde la ultima llamada
+        /* this.tornillo.rotation.x += this.velocidad * dt;
+        this.tornillo.rotation.x += this.velocidad * dt;
+        this.tornillo.rotation.z += this.velocidad * dt;
+        */
+        //this.pinchosP.rotation.y += 0.1;
+
+        //this.upDown(this.velocidad*dt);
+        TWEEN.update();
+    }
 
 }
 
