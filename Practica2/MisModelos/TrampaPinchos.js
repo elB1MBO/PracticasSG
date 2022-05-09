@@ -65,8 +65,8 @@ class TrampaPinchos extends THREE.Object3D {
         var origen = {x: -this.ladoBase/2, y: 0.01};
         var destino = {x: -this.ladoBase/2, y: -1.5};
         var movimiento = new TWEEN.Tween(origen)
-            .to(destino, 2000)
-            .easing(TWEEN.Easing.Quadratic.InOut)
+            .to(destino, 1000)
+            .easing(TWEEN.Easing.Elastic.InOut)
             .onUpdate(() => {
                 this.pinchosP.position.x = origen.x;
                 this.pinchosP.position.y = origen.y;

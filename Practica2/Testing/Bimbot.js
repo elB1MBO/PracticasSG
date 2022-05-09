@@ -11,20 +11,28 @@ class Bimbot extends THREE.Object3D {
     var loader = new GLTFLoader();
     loader.load( '../models/gltf/robot.glb', ( gltf ) => {
       // El modelo está en el atributo  scene
-      var model = gltf.scene;
+      this.model = gltf.scene;
       // Y las animaciones en el atributo  animations
       var animations = gltf.animations;
       // No olvidarse de colgar el modelo del Object3D de esta instancia de la clase (this)
-      that.add( model );
+      that.add( this.model );
       console.log (animations);
-      that.createActions(model,animations);
+      that.createActions(this.model,animations);
       // Se crea la interfaz de usuario que nos permite ver las animaciones que tiene el modelo y qué realizan
       //that.createGUI (gui, str);
     }, undefined, ( e ) => { console.error( e ); }
     );
 
+    //Creamos la camara y la añadimos a this
+    this.camara = this.createCamera();
+    this.add(this.camara);
+
   }
- 
+
+  getModelo(){
+    return this.model;
+  }
+
   // ******* ******* ******* ******* ******* ******* ******* 
   
   createActions (model, animations) {
@@ -97,6 +105,23 @@ class Bimbot extends THREE.Object3D {
     }
     // Una vez configurado el accionador, se lanza la animación
     this.activeAction.play();    
+  }
+
+  //*********************CAMARA*^***************** */
+
+  createCamera () {
+    //Indicamos el modelo quedebe seguir:
+    var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    // También se indica dónde se coloca
+    camera.position.set(this.position.x, this.position.y+10, this.position.z-23);
+    // Y hacia dónde mira
+    camera.lookAt(this.position);
+    return camera;
+
+  }
+
+  getCamera(){
+    return this.camara;
   }
   
   // ******* ******* ******* ******* ******* ******* ******* 

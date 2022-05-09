@@ -51,37 +51,22 @@ class MyScene extends THREE.Scene {
 
     this.add (this.model);
   }
-  
+
   createCamera () {
-    //Indicamos el modelo quedebe seguir:
-    var bimbot = this.model.getBimbot();
-    this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-    // También se indica dónde se coloca
-    this.camera.position.set(bimbot.position.x, bimbot.position.y+10, bimbot.position.z-20);
-    // Y hacia dónde mira
-    var look = bimbot.position;
-    this.camera.lookAt(look);
-    this.add (this.camera);
-    
-    // Para el control de cámara usamos una clase que ya tiene implementado los movimientos de órbita
-    this.cameraControl = new TrackballControls (this.camera, this.renderer.domElement);
-    
-    // Se configuran las velocidades de los movimientos
-    this.cameraControl.rotateSpeed = 5;
-    this.cameraControl.zoomSpeed = -2;
-    this.cameraControl.panSpeed = 0.5;
-    // Debe orbitar con respecto al punto de mira de la cámara
-    this.cameraControl.target = look;
+    this.camera = this.model.getBimbot().getCamera();
   }
   
   createGround () {
     // El suelo es un Mesh, necesita una geometría y un material.
     
     // La geometría es una caja con muy poca altura
-    var geometryGround = new THREE.BoxGeometry (100,0.2,100);
+    var geometryGround = new THREE.BoxGeometry (200,0.2,200);
     
     // El material se hará con una textura de madera
-    var texture = new THREE.TextureLoader().load('../imgs/wood.jpg');
+    var texture = new THREE.TextureLoader().load('../imgs/grass1.jpg');
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(10, 10);
     var materialGround = new THREE.MeshPhongMaterial ({map: texture});
     
     // Ya se puede construir el Mesh
@@ -90,6 +75,7 @@ class MyScene extends THREE.Scene {
     // Todas las figuras se crean centradas en el origen.
     // El suelo lo bajamos la mitad de su altura para que el origen del mundo se quede en su lado superior
     ground.position.y = -0.1;
+    ground.position.z = 70;
     
     // Que no se nos olvide añadirlo a la escena, que en este caso es  this
     this.add (ground);
@@ -134,7 +120,7 @@ class MyScene extends THREE.Scene {
     // Si no se le da punto de mira, apuntará al (0,0,0) en coordenadas del mundo
     // En este caso se declara como   this.atributo   para que sea un atributo accesible desde otros métodos.
     this.spotLight = new THREE.SpotLight( 0xffffff, this.guiControls.lightIntensity );
-    this.spotLight.position.set( 60, 60, 40 );
+    this.spotLight.position.set( 180, 100, 140 );
     this.add (this.spotLight);
   }
   
@@ -154,12 +140,6 @@ class MyScene extends THREE.Scene {
     $(myCanvas).append(renderer.domElement);
     
     return renderer;  
-  }
-  
-  getCamera () {
-    // En principio se devuelve la única cámara que tenemos
-    // Si hubiera varias cámaras, este método decidiría qué cámara devuelve cada vez que es consultado
-    return this.camera;
   }
   
   setCameraAspect (ratio) {
@@ -187,7 +167,7 @@ class MyScene extends THREE.Scene {
     requestAnimationFrame(() => this.update())
     
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
-    this.renderer.render (this, this.getCamera());
+    this.renderer.render (this, this.camera);
 
     // Se actualizan los elementos de la escena para cada frame
     // Se actualiza la intensidad de la luz con lo que haya indicado el usuario en la gui
@@ -197,7 +177,7 @@ class MyScene extends THREE.Scene {
     this.axis.visible = this.guiControls.axisOnOff;
     
     // Se actualiza la posición de la cámara según su controlador
-    this.cameraControl.update();
+    //this.cameraControl.update();
     
     // Se actualiza el resto del modelo
     this.model.update();

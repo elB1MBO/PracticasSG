@@ -7,10 +7,7 @@ import { TrackballControls } from '../libs/TrackballControls.js'
 
 // Clases de mi proyecto
 
-import { Tornillo } from './Tornillo.js';
-import { Tuerca } from './Tuerca.js';
-import { Bimbot } from './Bimbot.js';
-import {TrampaPinchos} from './TrampaPinchos.js';
+import { Escenario } from './Escenario.js';
 
 /// La clase fachada del modelo
 /**
@@ -42,16 +39,55 @@ class MyScene extends THREE.Scene {
     this.createGround ();
     
     // Y unos ejes. Imprescindibles para orientarnos sobre dónde están las cosas
-    this.axis = new THREE.AxesHelper (5);
+    this.axis = new THREE.AxesHelper (10);
     this.add (this.axis);
+
+    this.fondo = this.createBackground();
+    this.add(this.fondo);
     
-    // Por último creamos el modelo.
-    // El modelo puede incluir su parte de la interfaz gráfica de usuario. Le pasamos la referencia a 
-    // la gui y el texto bajo el que se agruparán los controles de la interfaz que añada el modelo.
-    //this.model = new Tornillo(this.gui, "Mi Tornillo");
-    this.model = new Bimbot(this.gui, "BIMBOT");
+    this.model = new Escenario();
     this.add (this.model);
   }
+
+    //El fondo será una esfera con una textura
+    createBackground(){
+      var geometry = new THREE.BoxGeometry(1000, 1000, 1000);
+        var loader = new THREE.TextureLoader();
+        var materials = [
+          new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_01.jpg'), side: THREE.BackSide}),
+          new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_02.jpg'), side: THREE.BackSide}),
+          new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_03.jpg'), side: THREE.BackSide}),
+          new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_04.jpg'), side: THREE.BackSide}),
+          new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_05.jpg'), side: THREE.BackSide}),
+          new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_06.jpg'), side: THREE.BackSide}),
+          /* new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_07.jpg'), side: THREE.BackSide}),
+          new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_08.jpg'), side: THREE.BackSide}),
+          new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_09.jpg'), side: THREE.BackSide}),
+          new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_10.jpg'), side: THREE.BackSide}),
+          new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_11.jpg'), side: THREE.BackSide}),
+          new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_12.jpg'), side: THREE.BackSide}),
+         */];
+        var fondo = new THREE.Mesh(geometry, materials);
+        return fondo;
+      /* const geometry = new THREE.DodecahedronGeometry(100, 0);
+      const loader = new THREE.TextureLoader();
+      const materials = [
+        new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_01.jpg'), side: THREE.BackSide}),
+        new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_02.jpg'), side: THREE.BackSide}),
+        new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_03.jpg'), side: THREE.BackSide}),
+        new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_04.jpg'), side: THREE.BackSide}),
+        new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_05.jpg'), side: THREE.BackSide}),
+        new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_06.jpg'), side: THREE.BackSide}),
+        new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_07.jpg'), side: THREE.BackSide}),
+        new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_08.jpg'), side: THREE.BackSide}),
+        new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_09.jpg'), side: THREE.BackSide}),
+        new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_10.jpg'), side: THREE.BackSide}),
+        new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_11.jpg'), side: THREE.BackSide}),
+        new THREE.MeshLambertMaterial({map:loader.load('../imgs/backgrounds/imagenes/Sky1_12.jpg'), side: THREE.BackSide}),
+      ];
+      const dodecaedro = new THREE.Mesh(geometry, materials);
+      return dodecaedro; */
+    }
   
   createCamera () {
     // Para crear una cámara le indicamos
@@ -81,7 +117,7 @@ class MyScene extends THREE.Scene {
     // El suelo es un Mesh, necesita una geometría y un material.
     
     // La geometría es una caja con muy poca altura
-    var geometryGround = new THREE.BoxGeometry (200,0.2,200);
+    var geometryGround = new THREE.BoxGeometry (100,0.2,100);
     
     // El material se hará con una textura de madera
     var texture = new THREE.TextureLoader().load('../imgs/grass1.jpg');
@@ -89,6 +125,7 @@ class MyScene extends THREE.Scene {
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(10, 10);
     var materialGround = new THREE.MeshPhongMaterial ({map: texture});
+    
     
     // Ya se puede construir el Mesh
     var ground = new THREE.Mesh (geometryGround, materialGround);
@@ -140,7 +177,7 @@ class MyScene extends THREE.Scene {
     // Si no se le da punto de mira, apuntará al (0,0,0) en coordenadas del mundo
     // En este caso se declara como   this.atributo   para que sea un atributo accesible desde otros métodos.
     this.spotLight = new THREE.SpotLight( 0xffffff, this.guiControls.lightIntensity );
-    this.spotLight.position.set( 200, 100, 180 );
+    this.spotLight.position.set( 60, 60, 40 );
     this.add (this.spotLight);
   }
   

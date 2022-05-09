@@ -3,14 +3,16 @@ import { GLTFLoader } from '../libs/GLTFLoader.js'
 import * as TWEEN from '../libs/tween.esm.js'
 import * as KeyCode from '../libs/keycode.esm.js'
 import {Bimbot} from './Bimbot.js' 
+import { TrackballControls } from '../libs/TrackballControls.js'
 
 class main extends THREE.Object3D {
   constructor(gui, titleGUI){
       super();
       this.createGUI(gui, titleGUI);
 
-    this.clock = new THREE.Clock();
+      this.clock = new THREE.Clock();
 
+      
       this.bimbot = new Bimbot();
       this.add(this.bimbot);
 
@@ -26,34 +28,55 @@ class main extends THREE.Object3D {
       window.addEventListener("keypress", (event) => this.onKeyPressed(event));
   }
 
+  
+
   getBimbot(){
       return this.bimbot;
+  }
+
+  getCamera(){
+      return this.camara;
   }
 
   //Funcion que se activa cuando se aprieta una tecla.
   onKeyDown(event){
     var x = event.which || event.key;
+    var isWPressed = false;
     switch (x) {
         case KeyCode.KEY_W:
-            this.bimbot.rotation.y = Math.PI*2;
+            isWPressed = true;
+            this.bimbot.getModelo().rotation.y = Math.PI*2;
             this.bimbot.position.z += 0.5;
-            this.bimbot.fadeToAction("Running", true, 1);
+            this.bimbot.fadeToAction("Running", false, 1);
             break;
         case KeyCode.KEY_A:
-            this.bimbot.rotation.y = Math.PI/2;
-            this.bimbot.position.x += 0.5;
+            if(isWPressed){
+                this.bimbot.getModelo().rotation.y = Math.PI/4;
+                this.bimbot.position.x += 0.5;
+                this.bimbot.position.z += 0.5;
+            }else{
+                this.bimbot.getModelo().rotation.y = Math.PI/2;
+                this.bimbot.position.x += 0.5;
+            }
             this.bimbot.fadeToAction("Running", true, 1);
             break;
         case KeyCode.KEY_S:
-            this.bimbot.rotation.y = Math.PI;
+            this.bimbot.getModelo().rotation.y = Math.PI;
             this.bimbot.position.z -= 0.2;
-            this.bimbot.fadeToAction("Walking", true, 1);
+            this.bimbot.fadeToAction("Running", true, 1);
             break;
         case KeyCode.KEY_D:
-            this.bimbot.rotation.y = -Math.PI/2;
-            this.bimbot.position.x -= 0.5;
+            if(isWPressed){
+                this.bimbot.getModelo().rotation.y = -Math.PI/4;
+                this.bimbot.position.x -= 0.5;
+                this.bimbot.position.z += 0.5;
+            }else{
+                this.bimbot.getModelo().rotation.y = -Math.PI/2;
+                this.bimbot.position.x -= 0.5;
+            }
             this.bimbot.fadeToAction("Running", true, 1);
             break;  
+        case KeyCode.KEY_W:
         /* case KeyCode.KEY_SPACE:
             this.bimbot.position.y += 0.5;
             this.bimbot.fadeToAction("Jump", true, 0.8);
@@ -75,7 +98,7 @@ class main extends THREE.Object3D {
       switch(x){
           case KeyCode.KEY_SPACE:
             this.bimbot.fadeToAction('Jump', false, 1);
-            this.bimbot.position.y += 1;
+            //this.bimbot.position.y += 1;
             break;
           case KeyCode.KEY_Q:
             this.bimbot.fadeToAction("Wave", false, 0.6);
@@ -97,7 +120,7 @@ class main extends THREE.Object3D {
     this.bimbot.update();
     
     //var camera = this.scene.getCamera();
-    //camera.position.set(this.bimbot.position.x, this.bimbot.position.y+10, this.bimbot.position.z-20);
+    //this.camara.position.set(this.bimbot.position.x, this.bimbot.position.y+10, this.bimbot.position.z-20);
 
   }
 
