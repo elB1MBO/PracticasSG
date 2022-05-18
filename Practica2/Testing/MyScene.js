@@ -9,6 +9,7 @@ import { TrackballControls } from '../libs/TrackballControls.js'
 import { Bimbot } from './Bimbot.js';
 import {main} from './main.js';
 
+
 /// La clase fachada del modelo
 /**
  * Usaremos una clase derivada de la clase Scene de Three.js para llevar el control de la escena y de todo lo que ocurre en ella.
@@ -25,7 +26,7 @@ class MyScene extends THREE.Scene {
     
     // Se crea la interfaz gráfica de usuario
     this.gui = this.createGUI ();
-    
+
     // Construimos los distinos elementos que tendremos en la escena
     
     // Todo elemento que se desee sea tenido en cuenta en el renderizado de la escena debe pertenecer a esta. Bien como hijo de la escena (this en esta clase) o como hijo de un elemento que ya esté en la escena.
@@ -51,6 +52,73 @@ class MyScene extends THREE.Scene {
 
     this.add (this.model);
   }
+
+  createObstacles(){
+    this.tornillo = this.importTornillo();
+    this.tuerca = this.importTuerca();
+    this.tronco = this.importTronco();
+    this.trampaP = this.importTrampa();
+    this.caja = this.importCaja();
+
+    this.add(this.tornillo);
+    this.add(this.tuerca);
+    this.add(this.tronco);
+    this.add(this.trampaP);
+    this.add(this.caja);
+  }
+
+  // ******* ******* Importar y colocar objetos externos ******* ******* 
+  //TORNILLO
+  importTornillo(){
+    var tornillo = new Tornillo();
+    tornillo.scale.x = 0.2;
+    tornillo.scale.y = 0.2;
+    tornillo.scale.z = 0.2;
+    tornillo.position.x = 3;
+    tornillo.position.y = 2.5;
+    return tornillo;
+  }
+  //TUERCA
+  importTuerca(){
+    var tuerca = new Tuerca();
+    tuerca.scale.x = 0.2;
+    tuerca.scale.y = 0.2;
+    tuerca.scale.z = 0.2;
+    tuerca.position.x = 6;
+    tuerca.position.y = 2.5;
+    return tuerca;
+  }
+  //TRONCO
+  importTronco(){
+    var tronco = new Tronco();
+    tronco.scale.x = 0.6;
+    tronco.scale.y = 0.6;
+    tronco.scale.z = 0.6;
+    tronco.position.x = -3;
+    tronco.position.y = 1;
+    return tronco;
+  }
+  //TRAMPA PINCHOS
+  importTrampa(){
+    var trampa = new TrampaPinchos();
+    trampa.scale.x = 0.8;
+    trampa.scale.y = 0.8;
+    trampa.scale.z = 0.8;
+    trampa.position.z = 4;
+    return trampa;
+  }
+
+  //CAJA
+  importCaja(){
+    var caja = new Caja();
+    caja.position.z = 1;
+    caja.position.x = 1;
+    caja.position.y = 0.3;
+    return caja;
+  }
+
+  // ******* ******* ******* ******* ******* ******* ******* 
+  
 
   createCamera () {
     this.camera = this.model.getBimbot().getCamera();
@@ -181,6 +249,7 @@ class MyScene extends THREE.Scene {
     
     // Se actualiza el resto del modelo
     this.model.update();
+
   }
 }
 

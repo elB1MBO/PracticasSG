@@ -1,6 +1,11 @@
 import * as THREE from '../libs/three.module.js'
 import { GLTFLoader } from '../libs/GLTFLoader.js'
 import * as TWEEN from '../libs/tween.esm.js'
+import { Tornillo } from '../MisModelos/Tornillo.js'
+import { Tuerca } from '../MisModelos/Tuerca.js'
+import { Tronco } from '../MisModelos/Tronco.js'
+import { TrampaPinchos } from '../MisModelos/TrampaPinchos.js'
+import { Caja } from '../MisModelos/Caja.js'
 
  
 class Bimbot extends THREE.Object3D {
@@ -26,7 +31,6 @@ class Bimbot extends THREE.Object3D {
     //Creamos la camara y la añadimos a this
     this.camara = this.createCamera();
     this.add(this.camara);
-
   }
 
   getModelo(){
@@ -73,8 +77,6 @@ class Bimbot extends THREE.Object3D {
     
   }
   
-  
-  
   // ******* ******* ******* ******* ******* ******* ******* 
   
   // Método para lanzar una animación
@@ -107,13 +109,13 @@ class Bimbot extends THREE.Object3D {
     this.activeAction.play();    
   }
 
-  //*********************CAMARA*^***************** */
+  //*********************CAMARA******************* */
 
   createCamera () {
-    //Indicamos el modelo quedebe seguir:
+    //Indicamos el modelo que debe seguir:
     var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     // También se indica dónde se coloca
-    camera.position.set(this.position.x, this.position.y+10, this.position.z-23);
+    camera.position.set(this.position.x, this.position.y+15, this.position.z-20);
     // Y hacia dónde mira
     camera.lookAt(this.position);
     return camera;

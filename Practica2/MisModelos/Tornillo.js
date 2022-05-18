@@ -90,8 +90,8 @@ class Tornillo extends THREE.Object3D {
         //TWEEN.add(movimiento);
     }
 
-    update(){ //dt=delta time
-        var dt = this.reloj.getDelta(); //Segundos desde la ultima llamada
+    update(dt){ //dt=delta time
+        //var dt = this.reloj.getDelta(); //Segundos desde la ultima llamada
         this.tornillo.rotation.x += this.velocidad * dt;
         this.tornillo.rotation.x += this.velocidad * dt;
         this.tornillo.rotation.z += this.velocidad * dt;

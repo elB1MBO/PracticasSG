@@ -3,7 +3,7 @@ import { GLTFLoader } from '../libs/GLTFLoader.js'
 import * as TWEEN from '../libs/tween.esm.js'
 import * as KeyCode from '../libs/keycode.esm.js'
 import {Bimbot} from './Bimbot.js' 
-import { TrackballControls } from '../libs/TrackballControls.js'
+import {Objetos} from './Objetos.js'
 
 class main extends THREE.Object3D {
   constructor(gui, titleGUI){
@@ -12,7 +12,12 @@ class main extends THREE.Object3D {
 
       this.clock = new THREE.Clock();
 
-      
+      //Variables para las animaciones:
+      //Para ello, tengo un vector con los movimientos:
+      //W A S D SPACE
+      this.movimientos = [false, false, false, false, false]; 
+      this.startAnimation = false; //variable que marca si una animación ya ha empezado o no
+
       this.bimbot = new Bimbot();
       this.add(this.bimbot);
 
@@ -20,6 +25,9 @@ class main extends THREE.Object3D {
           var clip = this.bimbot.animations[i];
           console.log(clip.name);
       }
+
+      this.objetos = new Objetos();
+      this.add(this.objetos);
 
       //this.bimbot.fadeToAction('Idle', true, 1);
 
@@ -41,55 +49,54 @@ class main extends THREE.Object3D {
   //Funcion que se activa cuando se aprieta una tecla.
   onKeyDown(event){
     var x = event.which || event.key;
-    var isWPressed = false;
     switch (x) {
         case KeyCode.KEY_W:
-            isWPressed = true;
+            //Cambia el estado de la variable corriendo a true
+            this.movimientos[0] = true;
+            this.startAnimation = true;
             this.bimbot.getModelo().rotation.y = Math.PI*2;
-            this.bimbot.position.z += 0.5;
-            this.bimbot.fadeToAction("Running", false, 1);
             break;
         case KeyCode.KEY_A:
-            if(isWPressed){
-                this.bimbot.getModelo().rotation.y = Math.PI/4;
-                this.bimbot.position.x += 0.5;
-                this.bimbot.position.z += 0.5;
-            }else{
-                this.bimbot.getModelo().rotation.y = Math.PI/2;
-                this.bimbot.position.x += 0.5;
-            }
-            this.bimbot.fadeToAction("Running", true, 1);
+            this.movimientos[1] = true;
+            this.startAnimation = true;
+            this.bimbot.getModelo().rotation.y = Math.PI/2;
             break;
         case KeyCode.KEY_S:
+            this.movimientos[2] = true;
+            this.startAnimation = true;
             this.bimbot.getModelo().rotation.y = Math.PI;
-            this.bimbot.position.z -= 0.2;
-            this.bimbot.fadeToAction("Running", true, 1);
             break;
         case KeyCode.KEY_D:
-            if(isWPressed){
-                this.bimbot.getModelo().rotation.y = -Math.PI/4;
-                this.bimbot.position.x -= 0.5;
-                this.bimbot.position.z += 0.5;
-            }else{
-                this.bimbot.getModelo().rotation.y = -Math.PI/2;
-                this.bimbot.position.x -= 0.5;
-            }
-            this.bimbot.fadeToAction("Running", true, 1);
+            this.movimientos[3] = true;
+            this.startAnimation = true;
+            this.bimbot.getModelo().rotation.y = -Math.PI/2;
             break;  
-        case KeyCode.KEY_W:
-        /* case KeyCode.KEY_SPACE:
-            this.bimbot.position.y += 0.5;
-            this.bimbot.fadeToAction("Jump", true, 0.8);
-            break; */  
-        /* case KeyCode.KEY_SHIFT:
-            this.bimbot.fadeToAction("Wave", false, 0.6);
-            break; */
         default:
             break;
     }
   }
 
   onKeyUp(event){
+    var x = event.which || event.key;
+    switch (x) {
+        case KeyCode.KEY_W:
+            //Cambia el estado de la variable corriendo a false
+            this.movimientos[0] = false;
+            this.idle = true;
+            break;
+        case KeyCode.KEY_A:
+            this.movimientos[1] = false;
+            this.idle = true;
+            break;
+        case KeyCode.KEY_S:
+            this.movimientos[2] = false;
+            this.idle = true;
+            break;
+        case KeyCode.KEY_D:
+            this.movimientos[3] = false;
+            this.idle = true;
+            break;
+        }
     this.bimbot.fadeToAction('Idle', true, 1);
   }
 
@@ -118,7 +125,86 @@ class main extends THREE.Object3D {
     if (this.mixer) this.mixer.update (dt);
 
     this.bimbot.update();
-    
+    this.objetos.update(dt);
+
+    /* if(this.idle==true){
+        this.bimbot.fadeToAction('Idle', true, 1);
+    } */
+
+    //console.log("Estado: " + this.movimientos);
+    //Hacia delante
+    if(this.movimientos[0] == true){
+        console.log("Ha pulsado la W");
+        this.bimbot.position.z += 0.3;
+        if(this.startAnimation){
+            this.bimbot.fadeToAction("Running", true, 1);
+            this.startAnimation = false;
+        }
+    } else {
+        console.log("Ha soltado la W");
+    }
+    //Izquierda
+    if(this.movimientos[1] == true){
+        console.log("Ha pulsado la A");
+        this.bimbot.position.x += 0.3;
+        if(this.startAnimation){
+            this.bimbot.fadeToAction("Running", true, 1);
+            this.startAnimation = false;
+        }
+    } else {
+        console.log("Ha soltado la A");
+    }
+    //Atras
+    if(this.movimientos[2] == true){
+        console.log("Ha pulsado la S");
+        this.bimbot.position.z -= 0.3;
+        if(this.startAnimation){
+            this.bimbot.fadeToAction("Running", true, 1);
+            this.startAnimation = false;
+        }
+    } else {
+        console.log("Ha soltado la S");
+    }
+    //Derecha
+    if(this.movimientos[3] == true){
+        console.log("Ha pulsado la D");
+        this.bimbot.position.x -= 0.3;
+        if(this.startAnimation){
+            this.bimbot.fadeToAction("Running", true, 1);
+            this.startAnimation = false;
+        }
+    } else {
+        console.log("Ha soltado la D");
+    }
+/* 
+    switch (this.movimientos) {
+        case this.movimientos[0] == true:
+            console.log("Estado: " + this.movimientos[0]);
+            this.bimbot.position.z += 0.5;
+            this.bimbot.fadeToAction("Running", true, 1);
+            break;
+        case this.movimientos[1]:
+            this.bimbot.position.x += 0.5;
+            this.bimbot.fadeToAction("Running", true, 1);
+            break;
+        case this.movimientos[2]:
+            this.bimbot.position.z -= 0.5;
+            this.bimbot.fadeToAction("Running", true, 1);
+            break;
+        case this.movimientos[3]:
+            this.bimbot.position.x -= 0.5;
+            this.bimbot.fadeToAction("Running", true, 1);
+            break;
+        case this.movimientos[4]:
+            
+            break;
+
+        default:
+            break;
+    } */
+
+    //console.log("Estados 2: " + this.movimientos);
+
     //var camera = this.scene.getCamera();
     //this.camara.position.set(this.bimbot.position.x, this.bimbot.position.y+10, this.bimbot.position.z-20);
 
@@ -126,9 +212,13 @@ class main extends THREE.Object3D {
 
 }
 
+export { main };
 
 
-/* 
+
+
+
+/*
 class CharacterController {
     constructor(){
         this.input = new CharacterControllerInput();
@@ -366,5 +456,3 @@ class JumpState extends State {
         
     }
 } */
-
-export { main };
