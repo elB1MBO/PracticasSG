@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Movimiento</title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="../libs/jquery.js"></script>
+    <script type="module" src="MyScene.js"></script>    
+    <style>
+        body{
+            margin: 0;
+            overflow: hidden; 
+        }
+    </style>
+</head>
+<body>
+
+<!-- Div que mostrará las vidas del robot -->
+<div style="position:absolute; left:100px; padding: 10px 15px; background-color: rgb(243, 170, 141); opacity: 0.5; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;" id="Messages"></div>
+
+<!-- Div que muestra el mensaje de Game Over-->
+<div style="position: absolute; margin: auto; height: 100%; width: 100%; background-color: rgb(26, 25, 25); opacity: 0.8; display: block;" id="gameOverScreen">
+    <div style="margin: 10% auto;
+    width: 30%;
+    height: 30%;
+    position: relative;
+    background-color: rgba(69, 73, 105, 0.85);
+    border-radius: 20px;
+    padding: 3%;" id="container">
+        <div style="position: relative; margin: auto; color: white; text-align: center; font-size: xx-large; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;" id="gameOverMessage">
+            <h1>GAME OVER</h1>
+        </div>
+        <button style="position: relative; margin: auto 42.5%; background-color: red; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;" id="botonResume">RESUME</button>
+    </div>
+</div>
+
+<!-- Div which will hold the Output -->
+<div id="WebGL-output">
+</div>
+</body>
+</html>

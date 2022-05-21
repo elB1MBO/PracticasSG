@@ -28,6 +28,12 @@ class Bimbot extends THREE.Object3D {
     }, undefined, ( e ) => { console.error( e ); }
     );
 
+    //Establecemos los colliders del bimbot
+    this.setColliders(); 
+
+    //El bimbot tendra X vidas:
+    this.vidas = 3;
+
     //Creamos la camara y la añadimos a this
     this.camara = this.createCamera();
     this.add(this.camara);
@@ -35,6 +41,13 @@ class Bimbot extends THREE.Object3D {
 
   getModelo(){
     return this.model;
+  }
+
+  setVidas(x){
+    this.vidas = x;
+  }
+  getVidas(){
+    return this.vidas;
   }
 
   // ******* ******* ******* ******* ******* ******* ******* 
@@ -126,8 +139,29 @@ class Bimbot extends THREE.Object3D {
     return this.camara;
   }
   
+  // ******* ******* ******* COLISIONES ******* ******* ******* 
+
+  setColliders(){
+    var boxBB = this.createBB();
+    this.add(boxBB);
+  }
+
+  checkCollisions(){
+
+  }
+
+  //Crea la Bounding Box
+  createBB(){
+    //Hay que declarar los vectores min y max del Box3
+    var min = new THREE.Vector3(2, 2, 2);
+    var max = new THREE.Vector3(3, 3, 3);
+    //Así tenemos una caja de 1x1x1
+    var box = new THREE.Box3(min, max);
+    return box;
+  }
+
   // ******* ******* ******* ******* ******* ******* ******* 
-  
+
   update () {
     // Hay que pedirle al mixer que actualice las animaciones que controla
     var dt = this.clock.getDelta();

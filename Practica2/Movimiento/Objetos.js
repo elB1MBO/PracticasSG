@@ -18,12 +18,17 @@ class Objetos extends THREE.Object3D{
 
     createObstacles(){
         this.tronco = this.importTronco();
+        this.tronco.position.z = 30;
+        this.tronco.rotation.y = Math.PI/2;
         this.trampaP = this.importTrampa();
         this.caja = this.importCaja();
+        this.caja2 = this.importCaja();
+        this.caja2.position.x = -5;
 
         this.add(this.tronco);
         this.add(this.trampaP);
         this.add(this.caja);
+        this.add(this.caja2);
     }
 
     createCollectables(){
