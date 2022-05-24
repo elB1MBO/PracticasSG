@@ -10,7 +10,7 @@ class main extends THREE.Object3D {
 
       this.clock = new THREE.Clock();
 
-        this.velocidad = 0.2;
+      this.velocidad = 0.2;
 
       //Variables para las animaciones:
       //Para ello, tengo un vector con los movimientos:
@@ -40,7 +40,64 @@ class main extends THREE.Object3D {
       window.addEventListener("keydown", (event) => this.onKeyDown(event));
       window.addEventListener("keyup", (event) => this.onKeyUp(event));
       window.addEventListener("keypress", (event) => this.onKeyPressed(event));
+
+      //Que escuche el boton de RESUME
+      document.getElementById("botonResume").addEventListener("onclick", this.resume);
+      document.getElementById("botonColecionables").addEventListener("onclick", this.sumaVida);
+
+      window.addEventListener("keydown", (event) => this.recogeColeccionable(event));
+
+      //Colisiones:
+
+      this.cajaColision1 = this.createBoxCollider();
+      this.cajaColision1.position.z = 20;
+      //this.colliders.add(this.cajaColision1);
+      this.add(this.cajaColision1);
+
+      window.requestAnimationFrame(this.render);
+
   }
+
+  // ******* ******* ******* COLLIDERS ******* ******* *******
+
+  createBoxCollider(){
+      var geom = new THREE.BoxGeometry(5, 5, 5);
+      var material = new THREE.MeshToonMaterial({color: 0x049ef4});
+
+      var caja = new THREE.Mesh(geom, material);
+      return caja;
+  }
+  //Funcion que comprueba si dos boxes han colisionado
+  intersectBoxes (b1, b2) {
+    var vectorBetweenBoxes = new THREE.Vector2();
+    vectorBetweenBoxes.subVectors (new THREE.Vector2 (b1.position.x, b1.position.z),
+                                   new THREE.Vector2 (b2.position.x, b2.position.z));
+    console.log("Subvecgor: "+vectorBetweenBoxes.length());
+    return (vectorBetweenBoxes.length() < 2);
+  }
+
+  checkCollisions(){
+      if(this.intersectBoxes(this.bimbot.getColliders(), this.cajaColision1)){
+        console.log("Bimbot ha colisionado, pierde una vida y vuelve al inicio.");
+        this.bimbot.position.x = 0;
+        this.bimbot.position.z = 0;
+        this.bimbot.setVidas(this.bimbot.getVidas()-1);
+      }
+  }
+
+  // ******* ******* ******* RAYCAST ******* ******* *******
+
+  render() {
+    var raycaster = this.bimbot.getRaycaster();
+
+    var intersects = raycaster.intersectObject(this.cajaColision1);
+
+    intersects.material.color.set(0x981F18);
+
+    renderer.render(this, this.getCamera());
+  }
+
+  // ******* ******* ******* VIDA ******* ******* *******
 
   setMessage (str) {
     document.getElementById ("Messages").innerHTML = "<h2>"+str+"</h2>";
@@ -65,11 +122,37 @@ class main extends THREE.Object3D {
     }
   }
 
+  recogeColeccionable(event){
+    var x = event.which || event.key;
+    if(x === KeyCode.KEY_G){
+        console.log("HA RECOGIDO UN COLECCIONABLE");
+        this.bimbot.setColeccionables(this.bimbot.getColeccionables()+1);
+    }
+  }
+
+  setInfoColeccionables(){
+    document.getElementById("div-colecs").innerHTML = "<p id='num-colecs'>x"+this.bimbot.getColeccionables()+"</p>"
+  }
+
+  sumaVida(){
+    console.log("GANA UNA VIDA, pierde un coleccionable");
+    this.bimbot.setVidas(this.bimbot.getVidas()+1);
+    this.bimbot.setColeccionables(this.bimbot.getColeccionables()-1);
+  }
+
   gameOver(){
-      if(this.bimbot.getVidas() === 0){
+    if(this.bimbot.getVidas() === 0){
         var screen = document.getElementById("gameOverScreen");
-        screen.style.display = "block";
-      }
+        screen.style.display = "inline";
+        //Elimina al bimbot de la escena, ya que ha muerto
+        this.remove(this.bimbot);
+    }
+  }
+  //Cuando pulsen el boton de Resume, se volverá a crear al bimbot y se quitará la pantalla de game over
+  resume(){
+    document.getElementById("gameOverScreen").style.display = "none";
+    this.bimbot = new Bimbot();
+    this.add(this.bimbot);
   }
 
   //Funcion que se activa cuando se aprieta una tecla.
@@ -180,6 +263,14 @@ class main extends THREE.Object3D {
 
     this.bimbot.update();
     this.objetos.update();
+
+    //this.render();
+
+    this.setInfoColeccionables();
+
+    //COLISIONES
+    this.checkCollisions();
+
 
     //Vamos actualizando el mensaje de las vidas del robot
     this.setMessage("Vidas: "+this.bimbot.getVidas());

@@ -1,0 +1,81 @@
+*{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+body{
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+#Messages{
+    position:absolute; 
+    left:100px; 
+    padding: 10px 15px; 
+    background-color: rgb(243, 170, 141); 
+    opacity: 0.5; 
+}
+
+#gameOverScreen{
+    position: absolute; 
+    margin: auto; 
+    height: 100%; 
+    width: 100%; 
+    background-color: rgb(26, 25, 25); 
+    opacity: 0.8; 
+    display: none;
+}
+
+#container{
+    margin: 10% auto;
+    width: 30%;
+    height: 30%;
+    position: relative;
+    background-color: rgba(69, 73, 105, 0.85);
+    border-radius: 20px;
+    padding: 3%;
+}
+
+#gameOverMessage{
+    position: relative; 
+    margin: auto; 
+    color: white; 
+    text-align: center; 
+    font-size: xx-large; 
+}
+
+#botonResume{
+    position: relative; 
+    margin: auto 42.5%; 
+    background-color: red;
+    cursor: pointer;
+}
+
+.container-botonC{
+    position: absolute;
+    height: 20%;
+    width: 10%;
+    margin: 35% 85%;
+    background-color: rgb(170, 170, 71);
+    opacity: 1;
+    text-align: center;
+}
+
+.btn {
+    border: none;
+    background-color: inherit;
+    padding: 10px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-block;
+  }
+  
+/* On mouse-over */
+.btn:hover {
+    background: #eee;
+}
+
+#num-colecs{
+    font-size: large;
+
+}

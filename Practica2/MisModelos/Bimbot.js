@@ -20,6 +20,7 @@ class Bimbot extends THREE.Object3D {
       // Y las animaciones en el atributo  animations
       var animations = gltf.animations;
       // No olvidarse de colgar el modelo del Object3D de esta instancia de la clase (this)
+      model.position.z = -10;
       that.add( model );
 //       console.log (animations);
       that.createActions(model,animations);
@@ -54,7 +55,7 @@ class Bimbot extends THREE.Object3D {
     tornillo.scale.x = 0.2;
     tornillo.scale.y = 0.2;
     tornillo.scale.z = 0.2;
-    tornillo.position.x = 3;
+    tornillo.position.x = 10;
     tornillo.position.y = 2.5;
     return tornillo;
   }
@@ -64,7 +65,7 @@ class Bimbot extends THREE.Object3D {
     tuerca.scale.x = 0.2;
     tuerca.scale.y = 0.2;
     tuerca.scale.z = 0.2;
-    tuerca.position.x = 6;
+    tuerca.position.x = 15;
     tuerca.position.y = 2.5;
     return tuerca;
   }
@@ -74,8 +75,7 @@ class Bimbot extends THREE.Object3D {
     tronco.scale.x = 0.6;
     tronco.scale.y = 0.6;
     tronco.scale.z = 0.6;
-    tronco.position.x = -3;
-    tronco.position.y = 1;
+    tronco.position.y = 2;
     return tronco;
   }
   //TRAMPA PINCHOS
@@ -84,16 +84,16 @@ class Bimbot extends THREE.Object3D {
     trampa.scale.x = 0.8;
     trampa.scale.y = 0.8;
     trampa.scale.z = 0.8;
-    trampa.position.z = 4;
+    trampa.position.z = 20;
     return trampa;
   }
 
   //CAJA
   importCaja(){
     var caja = new Caja();
-    caja.position.z = 1;
+    caja.position.z = -20;
     caja.position.x = 1;
-    caja.position.y = 0.3;
+    caja.position.y = 1;
     return caja;
   }
 

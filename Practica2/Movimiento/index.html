@@ -5,6 +5,7 @@
 <head>
     <title>Movimiento</title>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="index.css">
     <script type="text/javascript" src="../libs/jquery.js"></script>
     <script type="module" src="MyScene.js"></script>    
     <style>
@@ -17,22 +18,22 @@
 <body>
 
 <!-- Div que mostrará las vidas del robot -->
-<div style="position:absolute; left:100px; padding: 10px 15px; background-color: rgb(243, 170, 141); opacity: 0.5; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;" id="Messages"></div>
+<div id="Messages"></div>
 
 <!-- Div que muestra el mensaje de Game Over-->
-<div style="position: absolute; margin: auto; height: 100%; width: 100%; background-color: rgb(26, 25, 25); opacity: 0.8; display: block;" id="gameOverScreen">
-    <div style="margin: 10% auto;
-    width: 30%;
-    height: 30%;
-    position: relative;
-    background-color: rgba(69, 73, 105, 0.85);
-    border-radius: 20px;
-    padding: 3%;" id="container">
-        <div style="position: relative; margin: auto; color: white; text-align: center; font-size: xx-large; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;" id="gameOverMessage">
+<div id="gameOverScreen">
+    <div id="container">
+        <div id="gameOverMessage">
             <h1>GAME OVER</h1>
         </div>
-        <button style="position: relative; margin: auto 42.5%; background-color: red; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;" id="botonResume">RESUME</button>
+        <button id="botonResume">RESUME</button>
     </div>
+</div>
+
+<div class="container-botonC" id="cont-boton-c">
+    <h3>Coleccionables:</h3>
+    <div class="num-colecs" id="div-colecs"></div>
+    <button class="btn colec" id="botonColecionables">USAR</button>
 </div>
 
 <!-- Div which will hold the Output -->

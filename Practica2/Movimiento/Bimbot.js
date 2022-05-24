@@ -29,14 +29,26 @@ class Bimbot extends THREE.Object3D {
     );
 
     //Establecemos los colliders del bimbot
-    this.setColliders(); 
+    this.colliders = this.setColliders(); 
+    this.add(this.colliders);
+
+    //Raycaster
+    this.raycaster = new THREE.Raycaster(this.position, this.position.z+1); //Mirando al eje z 
+    this.add(this.raycaster);
 
     //El bimbot tendra X vidas:
     this.vidas = 3;
-
+    //Y empieza con 0 coleccionables:
+    this.coleccionables = 2;
     //Creamos la camara y la añadimos a this
     this.camara = this.createCamera();
     this.add(this.camara);
+  }
+
+  // ******* ******* ******* GETTERS Y SETTERS ******* ******* *******
+
+  getRaycaster(){
+    return this.raycaster;
   }
 
   getModelo(){
@@ -50,6 +62,17 @@ class Bimbot extends THREE.Object3D {
     return this.vidas;
   }
 
+  getColeccionables(){
+    return this.coleccionables;
+  }
+  setColeccionables(x){
+    this.coleccionables = x;
+  }
+
+  getColliders(){
+    return this.colliders;
+  }
+  
   // ******* ******* ******* ******* ******* ******* ******* 
   
   createActions (model, animations) {
@@ -143,21 +166,24 @@ class Bimbot extends THREE.Object3D {
 
   setColliders(){
     var boxBB = this.createBB();
-    this.add(boxBB);
+    return boxBB;
   }
 
-  checkCollisions(){
-
-  }
 
   //Crea la Bounding Box
   createBB(){
-    //Hay que declarar los vectores min y max del Box3
+    /* //Hay que declarar los vectores min y max del Box3
     var min = new THREE.Vector3(2, 2, 2);
     var max = new THREE.Vector3(3, 3, 3);
     //Así tenemos una caja de 1x1x1
     var box = new THREE.Box3(min, max);
-    return box;
+    return box; */
+
+    var geom = new THREE.BoxGeometry(2, 8, 2);
+    var material = new THREE.MeshToonMaterial(0x3492);
+
+    var boxBB = new THREE.Mesh(geom, material);
+    return boxBB;
   }
 
   // ******* ******* ******* ******* ******* ******* ******* 
