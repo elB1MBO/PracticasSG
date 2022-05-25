@@ -29,12 +29,10 @@ class Bimbot extends THREE.Object3D {
     );
 
     //Establecemos los colliders del bimbot
-    this.colliders = this.setColliders(); 
-    this.add(this.colliders);
-
-    //Raycaster
-    this.raycaster = new THREE.Raycaster(this.position, this.position.z+1); //Mirando al eje z 
-    this.add(this.raycaster);
+    this.collider = this.setCollider(); 
+    //Vector con las coordenadas del mundo de la caja collider
+    this.cajaMundo = new THREE.Vector3();
+    this.add(this.collider);
 
     //El bimbot tendra X vidas:
     this.vidas = 3;
@@ -69,8 +67,8 @@ class Bimbot extends THREE.Object3D {
     this.coleccionables = x;
   }
 
-  getColliders(){
-    return this.colliders;
+  getCollider(){
+    return this.collider;
   }
   
   // ******* ******* ******* ******* ******* ******* ******* 
@@ -164,7 +162,7 @@ class Bimbot extends THREE.Object3D {
   
   // ******* ******* ******* COLISIONES ******* ******* ******* 
 
-  setColliders(){
+  setCollider(){
     var boxBB = this.createBB();
     return boxBB;
   }
@@ -179,10 +177,10 @@ class Bimbot extends THREE.Object3D {
     var box = new THREE.Box3(min, max);
     return box; */
 
-    var geom = new THREE.BoxGeometry(2, 8, 2);
+    var geom = new THREE.BoxGeometry(2, 4, 2);
     var material = new THREE.MeshToonMaterial(0x3492);
-
     var boxBB = new THREE.Mesh(geom, material);
+    boxBB.position.y = 2;
     return boxBB;
   }
 
@@ -192,6 +190,8 @@ class Bimbot extends THREE.Object3D {
     // Hay que pedirle al mixer que actualice las animaciones que controla
     var dt = this.clock.getDelta();
     if (this.mixer) this.mixer.update (dt);
+
+    //El collider debe actualizar su posicion en el mundo, para poder saber si ha colisionado con otra caja o no
 
     TWEEN.update(dt);
   }

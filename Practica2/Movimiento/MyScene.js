@@ -40,6 +40,8 @@ class MyScene extends THREE.Scene {
     this.axis = new THREE.AxesHelper (5);
     this.add (this.axis);
     
+    //Creo los limites del mapa para verlos mejor
+    this.createLimits();
     
     // Por último creamos el modelo.
     // El modelo puede incluir su parte de la interfaz gráfica de usuario. Le pasamos la referencia a 
@@ -119,6 +121,27 @@ class MyScene extends THREE.Scene {
 
   // ******* ******* ******* ******* ******* ******* ******* 
   
+  createLimits(){
+    var geom = new THREE.BoxGeometry(20, 10, 1);
+    var material = new THREE.MeshToonMaterial({color:0xBB191B});
+    var limiteComienzo = new THREE.Mesh(geom, material);
+    limiteComienzo.position.z = -18;
+    var limiteFinal = new THREE.Mesh(geom, material);
+    limiteFinal.position.z = 170;
+    this.add(limiteComienzo);
+    this.add(limiteFinal);
+
+    var geomLat = new THREE.BoxGeometry(1, 20, 200);
+    var materialLat = new THREE.MeshToonMaterial({color:0x191ABB});
+    var limiteIzq = new THREE.Mesh(geomLat, materialLat);
+    limiteIzq.position.x = 10;
+    limiteIzq.position.z = 70;
+    var limiteDcho = new THREE.Mesh(geomLat, materialLat);
+    limiteDcho.position.x = -10;
+    limiteDcho.position.z = 70;
+    this.add(limiteIzq);
+    this.add(limiteDcho);
+  }
 
   createCamera () {
     this.camera = this.model.getBimbot().getCamera();
@@ -128,13 +151,13 @@ class MyScene extends THREE.Scene {
     // El suelo es un Mesh, necesita una geometría y un material.
     
     // La geometría es una caja con muy poca altura
-    var geometryGround = new THREE.BoxGeometry (200,0.2,200);
+    var geometryGround = new THREE.BoxGeometry (20,0.2,200);
     
     // El material se hará con una textura de madera
     var texture = new THREE.TextureLoader().load('../imgs/grass1.jpg');
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(10, 10);
+    texture.repeat.set(2, 10);
     var materialGround = new THREE.MeshPhongMaterial ({map: texture});
     
     // Ya se puede construir el Mesh
@@ -227,6 +250,12 @@ class MyScene extends THREE.Scene {
     this.renderer.setSize (window.innerWidth, window.innerHeight);
   }
 
+  resume(){
+    if(this.model.gameResumed === true){
+      this.createCamera();
+    }
+  }
+
   update () {
     // Este método debe ser llamado cada vez que queramos visualizar la escena de nuevo.
     
@@ -247,6 +276,9 @@ class MyScene extends THREE.Scene {
     // Se actualiza la posición de la cámara según su controlador
     //this.cameraControl.update();
     
+    //La escena comprueba si ha dado al boton de resume para actualizar la cámara
+    this.resume();
+
     // Se actualiza el resto del modelo
     this.model.update();
 

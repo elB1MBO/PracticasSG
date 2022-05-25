@@ -14,7 +14,7 @@ class main extends THREE.Object3D {
 
       //Variables para las animaciones:
       //Para ello, tengo un vector con los movimientos:
-      //W A S D SPACE
+      //W A S D CLICK
       this.movimientos = [false, false, false, false, false]; 
       this.startAnimation = false; //variable que marca si una animación ya ha empezado o no
       this.currentAction = "Idle"; //Animación actual
@@ -41,9 +41,12 @@ class main extends THREE.Object3D {
       window.addEventListener("keyup", (event) => this.onKeyUp(event));
       window.addEventListener("keypress", (event) => this.onKeyPressed(event));
 
-      //Que escuche el boton de RESUME
-      document.getElementById("botonResume").addEventListener("onclick", this.resume);
-      document.getElementById("botonColecionables").addEventListener("onclick", this.sumaVida);
+      //Escuche el click izquierdo para dar un puñetazo
+      //window.addEventListener("mousedown", (event) => this.onMouseDown(event));
+
+      //Que escuche el boton de RESUME Y USAR
+      document.getElementById("botonResume").addEventListener("mousedown", (event) => this.resume(event), true);
+      document.getElementById("botonColecionables").addEventListener("mousedown", (event) => this.sumaVida(event), true);
 
       window.addEventListener("keydown", (event) => this.recogeColeccionable(event));
 
@@ -54,8 +57,23 @@ class main extends THREE.Object3D {
       //this.colliders.add(this.cajaColision1);
       this.add(this.cajaColision1);
 
-      window.requestAnimationFrame(this.render);
+      //Cuando el robot llegue a esta caja, saldrá un mensaje de que tiene que volver al comienzo, pero la velocidad de las trampas habrá aumentado
+      //Los coleccionables respawnarán -> en sitios aleatorios dentro del entorno?
+      this.cajaFinal = this.createBoxCollider();
+      this.cajaFinal.scale.x = 4;
+      this.cajaFinal.position.z = 160;
+      this.add(this.cajaFinal);
 
+      //window.requestAnimationFrame(this.render);
+
+      //para que la escena sepa cuándo tiene que actualizar la cámara
+      this.gameResumed = false;
+
+  }
+
+  setPosicionCaja(){
+      this.bimbot.collider.getWorldPosition(this.bimbot.cajaMundo);
+      console.log("Después de get: "+this.bimbot.cajaMundo.x+" "+this.bimbot.cajaMundo.y+" "+this.bimbot.cajaMundo.z);        
   }
 
   // ******* ******* ******* COLLIDERS ******* ******* *******
@@ -72,12 +90,12 @@ class main extends THREE.Object3D {
     var vectorBetweenBoxes = new THREE.Vector2();
     vectorBetweenBoxes.subVectors (new THREE.Vector2 (b1.position.x, b1.position.z),
                                    new THREE.Vector2 (b2.position.x, b2.position.z));
-    console.log("Subvecgor: "+vectorBetweenBoxes.length());
+    console.log("Subvector: "+vectorBetweenBoxes.length());
     return (vectorBetweenBoxes.length() < 2);
   }
 
   checkCollisions(){
-      if(this.intersectBoxes(this.bimbot.getColliders(), this.cajaColision1)){
+      if(this.intersectBoxes(this.bimbot.getCollider(), this.cajaColision1)){
         console.log("Bimbot ha colisionado, pierde una vida y vuelve al inicio.");
         this.bimbot.position.x = 0;
         this.bimbot.position.z = 0;
@@ -87,7 +105,7 @@ class main extends THREE.Object3D {
 
   // ******* ******* ******* RAYCAST ******* ******* *******
 
-  render() {
+  /* render() {
     var raycaster = this.bimbot.getRaycaster();
 
     var intersects = raycaster.intersectObject(this.cajaColision1);
@@ -95,7 +113,7 @@ class main extends THREE.Object3D {
     intersects.material.color.set(0x981F18);
 
     renderer.render(this, this.getCamera());
-  }
+  } */
 
   // ******* ******* ******* VIDA ******* ******* *******
 
@@ -136,8 +154,10 @@ class main extends THREE.Object3D {
 
   sumaVida(){
     console.log("GANA UNA VIDA, pierde un coleccionable");
-    this.bimbot.setVidas(this.bimbot.getVidas()+1);
-    this.bimbot.setColeccionables(this.bimbot.getColeccionables()-1);
+    if(this.bimbot.getColeccionables()>0){
+        this.bimbot.setVidas(this.bimbot.getVidas()+1);
+        this.bimbot.setColeccionables(this.bimbot.getColeccionables()-1);
+    }
   }
 
   gameOver(){
@@ -149,10 +169,29 @@ class main extends THREE.Object3D {
     }
   }
   //Cuando pulsen el boton de Resume, se volverá a crear al bimbot y se quitará la pantalla de game over
-  resume(){
-    document.getElementById("gameOverScreen").style.display = "none";
-    this.bimbot = new Bimbot();
-    this.add(this.bimbot);
+  resume(event){
+    if(event.button === 0){
+        document.getElementById("gameOverScreen").style.display = "none";
+        this.bimbot = new Bimbot();
+        this.add(this.bimbot);
+        this.gameResumed = true;
+    }
+  }
+
+  // ******* ******* ******* ANIMACIONES ******* ******* *******
+
+  //Click ratón:
+  onMouseDown(event){
+    if(event.button === 0){ //Boton izquierdo
+        this.movimientos[4] = true;
+        console.log("Ha pulsado el boton izqdo");
+    }
+  }
+  onMouseUp(event){
+    if(this.movimientos[4]){
+        this.movimientos[4] = false;
+        console.log("Ha soltado el boton izqdo");
+    }
   }
 
   //Funcion que se activa cuando se aprieta una tecla.
@@ -265,6 +304,10 @@ class main extends THREE.Object3D {
     this.objetos.update();
 
     //this.render();
+    var vector = new THREE.Vector3(this.bimbot.position.x, this.bimbot.position.y, this.bimbot.position.z);
+    this.bimbot.cajaMundo = vector;
+
+    this.setPosicionCaja();
 
     this.setInfoColeccionables();
 
@@ -284,34 +327,42 @@ class main extends THREE.Object3D {
     //console.log("Estado: " + this.movimientos);
     //Hacia delante
 
-    if(this.movimientos[0] == true){
+    if(this.movimientos[0] === true){
         this.bimbot.position.z += this.velocidad;
-        if(this.startAnimation){
+        if(this.startAnimation && this.currentAction != "Running"){
             this.bimbot.fadeToAction("Running", true, 1);
             this.startAnimation = false;
         }
     }
     //Izquierda
-    if(this.movimientos[1] == true){
+    if(this.movimientos[1] === true){
         this.bimbot.position.x += this.velocidad;
-        if(this.startAnimation){
+        if(this.startAnimation && this.currentAction != "Running"){
             this.bimbot.fadeToAction("Running", true, 1);
             this.startAnimation = false;
         }
     }
     //Atras
-    if(this.movimientos[2] == true){
+    if(this.movimientos[2] === true){
         this.bimbot.position.z -= this.velocidad;
-        if(this.startAnimation){
+        if(this.startAnimation && this.currentAction != "Running"){
             this.bimbot.fadeToAction("Running", true, 1);
             this.startAnimation = false;
         }
     }
     //Derecha
-    if(this.movimientos[3] == true){
+    if(this.movimientos[3] === true){
         this.bimbot.position.x -= this.velocidad;
-        if(this.startAnimation){
+        if(this.startAnimation && this.currentAction != "Running"){
             this.bimbot.fadeToAction("Running", true, 1);
+            this.startAnimation = false;
+        }
+    }
+
+    //Boton izqdo raton
+    if(this.movimientos[4] === true){
+        if(this.startAnimation && this.currentAction != "Running"){
+            this.bimbot.fadeToAction("Punch", false, 1);
             this.startAnimation = false;
         }
     }

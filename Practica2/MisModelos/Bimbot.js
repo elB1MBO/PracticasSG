@@ -3,6 +3,8 @@ import { GLTFLoader } from '../libs/GLTFLoader.js'
 import { Tornillo } from './Tornillo.js'
 import { Tuerca } from './Tuerca.js'
 import { Tronco } from './Tronco.js'
+import { TrampaH } from './TrampaH.js'
+import { TrampaV } from './TrampaV.js'
 import { TrampaPinchos } from './TrampaPinchos.js'
 import { Caja } from './Caja.js'
 import * as TWEEN from '../libs/tween.esm.js'
@@ -34,12 +36,15 @@ class Bimbot extends THREE.Object3D {
     this.tronco = this.importTronco();
     this.trampaP = this.importTrampa();
     this.caja = this.importCaja();
+    this.trampaH = this.importTrampaH();
+    this.trampaV = this.importTrampaV();
 
     this.add(this.tornillo);
     this.add(this.tuerca);
-    this.add(this.tronco);
     this.add(this.trampaP);
     this.add(this.caja);
+    this.add(this.trampaH);
+    this.add(this.trampaV);
 
     var geom = new THREE.BoxGeometry(2, 4.4, 2);
     var material = new THREE.MeshNormalMaterial();
@@ -78,6 +83,25 @@ class Bimbot extends THREE.Object3D {
     tronco.position.y = 2;
     return tronco;
   }
+  //TRAMPAS TRONCO
+  importTrampaH(){
+    var trampaH = new TrampaH();
+    trampaH.scale.x = 0.6;
+    trampaH.scale.y = 0.6;
+    trampaH.scale.z = 0.6;
+    trampaH.position.y = 2;
+    trampaH.position.x = 0;
+    return trampaH;
+  }
+  importTrampaV(){
+    var trampaV = new TrampaV();
+    trampaV.scale.x = 0.6;
+    trampaV.scale.y = 0.6;
+    trampaV.scale.z = 0.6;
+    trampaV.position.x = 0;
+    trampaV.position.z = 10;
+    return trampaV;
+  }
   //TRAMPA PINCHOS
   importTrampa(){
     var trampa = new TrampaPinchos();
@@ -93,7 +117,7 @@ class Bimbot extends THREE.Object3D {
     var caja = new Caja();
     caja.position.z = -20;
     caja.position.x = 1;
-    caja.position.y = 1;
+    caja.position.y = 1.5;
     return caja;
   }
 
@@ -211,6 +235,8 @@ class Bimbot extends THREE.Object3D {
     this.tuerca.update(dt);
     this.tronco.update(dt);
     this.trampaP.update(dt);
+    this.trampaH.update(dt);
+    this.trampaV.update(dt);
 
     TWEEN.update(dt);
   }
