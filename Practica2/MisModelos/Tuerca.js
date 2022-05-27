@@ -4,7 +4,7 @@ import {CilindroBarrido} from './CilindroBarrido.js'
 import * as TWEEN from '../libs/tween.esm.js'
 
 class Tuerca extends THREE.Object3D {
-    constructor(gui, titleGUI){
+    constructor(){
         super();
         //Creamos y referenciamos un reloj para la animacion
         this.reloj = new THREE.Clock();
@@ -14,16 +14,22 @@ class Tuerca extends THREE.Object3D {
 
         this.rt = 4;
 
-        //this.createGUI(gui, titleGUI);
-
         var cuerpo = this.createTuerca();
         var hueco = new CilindroBarrido();
 
         var csg = new CSG();
         csg.subtract([cuerpo, hueco]);
         this.tuerca = csg.toMesh();
+
+        /* this.collider = this.createCollider();
+        this.tuerca.add(this.collider); */
+
         this.upDown();
         this.add(this.tuerca);
+    }
+
+    getCollider(){
+        return this.collider;
     }
 
     createTuerca(){
@@ -43,8 +49,11 @@ class Tuerca extends THREE.Object3D {
         return cuerpoTuerca;
     }
 
-    createGUI(gui, titleGUI){
-        var folder = gui.addFolder(titleGUI);
+    createCollider(){
+        var geom = new THREE.BoxGeometry(this.rt*1.5, this.rt*1.5, this.rt*1.5);
+        var material = new THREE.MeshToonMaterial({color: 0xAA4342});
+        var collider = new THREE.Mesh(geom, material);
+        return collider;
     }
 
     upDown(){

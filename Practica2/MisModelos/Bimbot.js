@@ -104,11 +104,11 @@ class Bimbot extends THREE.Object3D {
   }
   //TRAMPA PINCHOS
   importTrampa(){
-    var trampa = new TrampaPinchos();
+    var trampa = new TrampaPinchos(5);
     trampa.scale.x = 0.8;
     trampa.scale.y = 0.8;
     trampa.scale.z = 0.8;
-    trampa.position.z = 20;
+    //trampa.position.z = 20;
     return trampa;
   }
 

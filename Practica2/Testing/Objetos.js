@@ -11,19 +11,34 @@ class Objetos extends THREE.Object3D{
         super();
         //Reloj
         this.clock = new THREE.Clock();
+
+        this.cajas = [];
+        this.coleccionables = [];
+        this.trampas = [];
         //Crear los obstáculos del escenario
         this.createObstacles();
         this.createCollectables();
     }
 
+    getCajas(){
+      return this.cajas;
+    }
+
     createObstacles(){
         this.tronco = this.importTronco();
         this.trampaP = this.importTrampa();
-        this.caja = this.importCaja();
+        var caja = this.importCaja();
+        this.cajas.push(caja);
+        this.add(caja);
+        var caja = this.importCaja();
+        caja.position.x = -5;
+        caja.position.z = 20;
+        this.cajas.push(caja);
+        this.add(caja);
 
         this.add(this.tronco);
         this.add(this.trampaP);
-        this.add(this.caja);
+        
     }
 
     createCollectables(){
@@ -93,6 +108,17 @@ class Objetos extends THREE.Object3D{
         this.tuerca.update(dt);
         this.tronco.update(dt);
         this.trampaP.update(dt);
+
+        //Para hacer update de varios objetos seria:
+        for(var i = 0; i<this.cajas.length; i++){
+          this.cajas[i].update(dt);
+        }
+        /* for(var i = 0; i<this.coleccionables.length; i++){
+          this.coleccionables[i].update(dt);
+        }
+        for(var i = 0; i<this.trampas.length; i++){
+          this.trampas[i].update(dt);
+        } */
     }
 }
 

@@ -11,6 +11,9 @@ class Tronco extends THREE.Object3D {
         this.radioTronco = 1;
         this.largoTronco = 14;
 
+        this.largoApoyo = 35;
+        this.ta = 0.3;
+
         //Relativo a los pinchos
         this.numFilas = 3;
         this.pinchosPorFila = 4;
@@ -18,15 +21,31 @@ class Tronco extends THREE.Object3D {
         this.tronco = this.createTronco();
 
         this.pinchos = this.createPinchos();
+        this.tronco.add(this.pinchos);
+
+        this.colliderTronco = this.createColliderTronco();
+        this.tronco.add(this.colliderTronco);
 
         this.apoyos = this.createApoyos();
 
-        this.tronco.add(this.pinchos);
+        this.collidersApoyos = this.createCollidersApoyos();
+        this.apoyos.add(this.collidersApoyos);
 
         this.troncoConApoyos = new THREE.Mesh();
         this.troncoConApoyos.add(this.tronco);
         this.troncoConApoyos.add(this.apoyos);
         this.add(this.troncoConApoyos);
+    }
+
+    setWorldPosition(x, y, z){
+        this.colliderTronco.position.x = x;
+    }
+
+    getColliderTronco(){
+        return this.colliderTronco;
+    }
+    getCollidersApoyo(){
+        return this.collidersApoyos;
     }
 
     createTronco(){
@@ -71,16 +90,14 @@ class Tronco extends THREE.Object3D {
     }
 
     createApoyos(){
-        this.largoApoyo = 25;
-        var ta = 0.3;
-        var geom = new THREE.BoxGeometry(ta/2, this.largoApoyo, ta);
+        var geom = new THREE.BoxGeometry(this.ta/2, this.largoApoyo, this.ta);
         var material = new THREE.MeshToonMaterial({color:0x3E2E08});
 
         var apoyo1 = new THREE.Mesh(geom, material);
         var apoyo2 = new THREE.Mesh(geom, material);
-
-        apoyo1.position.x = this.largoTronco/2 + ta/4;
-        apoyo2.position.x = -this.largoTronco/2 - ta/4;
+        
+        apoyo1.position.x = this.largoTronco/2 + this.ta/4;
+        apoyo2.position.x = -this.largoTronco/2 - this.ta/4;
         
         var csg = new CSG();
         csg.union([apoyo1, apoyo2]);
@@ -90,10 +107,30 @@ class Tronco extends THREE.Object3D {
         return apoyos;
     }
 
-    createGUI(gui, titleGUI){
-        var folder = gui.addFolder(titleGUI);
+    createColliderTronco(){
+        var geom = new THREE.CylinderGeometry(this.radioTronco*1.4, this.radioTronco*1.4, this.largoTronco, 30, 30);
+        var material = new THREE.MeshNormalMaterial();
+        var collider = new THREE.Mesh(geom, material);
+        collider.rotation.x = Math.PI/2;
+        return collider;
     }
 
+    createCollidersApoyos(){
+        var geom = new THREE.BoxGeometry(this.ta*2, this.largoApoyo, this.ta);
+        var material = new THREE.MeshNormalMaterial();
+        var colliderApoyo1 = new THREE.Mesh(geom, material);
+        var colliderApoyo2 = new THREE.Mesh(geom, material);
+        colliderApoyo1.position.x = this.largoTronco/2 + this.ta/4;
+        colliderApoyo2.position.x = -this.largoTronco/2 - this.ta/4;
+
+        var csg = new CSG();
+        csg.union([colliderApoyo1, colliderApoyo2]);
+        var collApoyos = csg.toMesh();
+        /* collApoyos.rotation.y = Math.PI/2;
+        collApoyos.position.y = this.largoApoyo/2; */
+
+        return collApoyos;
+    }
 
     update(dt){
         this.tronco.rotation.z -= this.velocidadGiro*dt;

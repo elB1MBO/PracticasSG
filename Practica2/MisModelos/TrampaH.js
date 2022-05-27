@@ -15,10 +15,13 @@ class TrampaH extends THREE.Object3D {
         this.add(this.trampaH);
     }
 
+    getTronco(){
+        return this.trampaH;
+    }
     //Animacion Horizontal
     inOut(){
-        var origen = {x: -this.trampaH.largoApoyo/2, y: 0};
-        var destino = {x: this.trampaH.largoApoyo/2, y: 0};
+        var origen = {x: -this.trampaH.largoApoyo/3, y: 0};
+        var destino = {x: this.trampaH.largoApoyo/3, y: 0};
         var movimiento = new TWEEN.Tween(origen)
             .to(destino, 1400)
             .easing(TWEEN.Easing.Elastic.InOut)
@@ -39,6 +42,7 @@ class TrampaH extends THREE.Object3D {
 
     update(dt){
         this.trampaH.update(dt); //hay que actualizar tambien el tronco
+        this.trampaH.setWorldPosition(this.position.x, this.position.y, this.position.z);
         TWEEN.update();
     }
 }

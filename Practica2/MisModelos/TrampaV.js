@@ -37,8 +37,8 @@ class TrampaV extends THREE.Object3D {
         var cp = new THREE.CurvePath();
         cp.add(curva); */
 
-        var origen = {x: -this.trampaV.largoApoyo/2, y: 3};
-        var destino = {x: this.trampaV.largoApoyo/2, y: 3};
+        var origen = {x: -this.trampaV.largoApoyo/3, y: 3};
+        var destino = {x: this.trampaV.largoApoyo/3, y: 3};
         /* var origen = {p: cp.getPoint(0)};
         var destino = {p: cp.getPoint(2)}; */
         var movimiento = new TWEEN.Tween(origen)

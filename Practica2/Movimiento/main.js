@@ -48,14 +48,32 @@ class main extends THREE.Object3D {
       document.getElementById("botonResume").addEventListener("mousedown", (event) => this.resume(event), true);
       document.getElementById("botonColecionables").addEventListener("mousedown", (event) => this.sumaVida(event), true);
 
-      window.addEventListener("keydown", (event) => this.recogeColeccionable(event));
+      window.addEventListener("keydown", (event) => this.keyColeccionable(event));
 
       //Colisiones:
 
-      this.cajaColision1 = this.createBoxCollider();
+      this.cajas = this.objetos.getCajas();
+      this.coleccionables = this.objetos.getColeccionables();
+      this.trampas = this.objetos.getTrampas();
+
+      /* console.log("COLLIDERS: "+this.objetos.getColliders());
+      
+      for (let i = 0; i < this.objetos.getColliders().length; i++) {
+          var element = this.objetos.getColliders()[i];
+          console.log("Collider "+i+": "+element);
+          console.log("Posicion collider: "+element[0].matrixWorld);
+          var v1 = new THREE.Vector3();
+          v1.setFromMatrixPosition(element[0].matrixWorld);
+          console.log(v1);
+          element[0].geometry.computeBoundingBox();
+          v1 = element[0].geometry.boundingBox;
+          console.log(v1);
+      } */
+
+      /* this.cajaColision1 = this.createBoxCollider();
       this.cajaColision1.position.z = 20;
       //this.colliders.add(this.cajaColision1);
-      this.add(this.cajaColision1);
+      this.add(this.cajaColision1); */
 
       //Cuando el robot llegue a esta caja, saldrá un mensaje de que tiene que volver al comienzo, pero la velocidad de las trampas habrá aumentado
       //Los coleccionables respawnarán -> en sitios aleatorios dentro del entorno?
@@ -63,6 +81,12 @@ class main extends THREE.Object3D {
       this.cajaFinal.scale.x = 4;
       this.cajaFinal.position.z = 160;
       this.add(this.cajaFinal);
+
+      //Defino los limites en los que puede moverse por el mapa
+      this.limiteZ = 170;
+      this.limiteZN = -15;
+      this.limiteX = 8;
+      this.limiteXN = -8;
 
       //window.requestAnimationFrame(this.render);
 
@@ -73,7 +97,6 @@ class main extends THREE.Object3D {
 
   setPosicionCaja(){
       this.bimbot.collider.getWorldPosition(this.bimbot.cajaMundo);
-      console.log("Después de get: "+this.bimbot.cajaMundo.x+" "+this.bimbot.cajaMundo.y+" "+this.bimbot.cajaMundo.z);        
   }
 
   // ******* ******* ******* COLLIDERS ******* ******* *******
@@ -90,18 +113,27 @@ class main extends THREE.Object3D {
     var vectorBetweenBoxes = new THREE.Vector2();
     vectorBetweenBoxes.subVectors (new THREE.Vector2 (b1.position.x, b1.position.z),
                                    new THREE.Vector2 (b2.position.x, b2.position.z));
-    console.log("Subvector: "+vectorBetweenBoxes.length());
     return (vectorBetweenBoxes.length() < 2);
   }
 
-  checkCollisions(){
-      if(this.intersectBoxes(this.bimbot.getCollider(), this.cajaColision1)){
+  checkCollisions(objeto){
+      if(this.intersectBoxes(this.bimbot, objeto)){
         console.log("Bimbot ha colisionado, pierde una vida y vuelve al inicio.");
         this.bimbot.position.x = 0;
         this.bimbot.position.z = 0;
         this.bimbot.setVidas(this.bimbot.getVidas()-1);
       }
   }
+
+  checkCollisionsColeccionables(objeto){
+    if(this.intersectBoxes(this.bimbot, objeto)){
+      console.log("Bimbot ha encontrado un coleccionable, lo recoge.");
+      this.objetos.remove(objeto);
+      this.recogeColeccionable();
+      return true;
+    }
+    return false;
+}
 
   // ******* ******* ******* RAYCAST ******* ******* *******
 
@@ -140,11 +172,15 @@ class main extends THREE.Object3D {
     }
   }
 
-  recogeColeccionable(event){
+  recogeColeccionable(){
+    console.log("HA RECOGIDO UN COLECCIONABLE");
+    this.bimbot.setColeccionables(this.bimbot.getColeccionables()+1);
+  }
+
+  keyColeccionable(event){
     var x = event.which || event.key;
     if(x === KeyCode.KEY_G){
-        console.log("HA RECOGIDO UN COLECCIONABLE");
-        this.bimbot.setColeccionables(this.bimbot.getColeccionables()+1);
+        this.recogeColeccionable();
     }
   }
 
@@ -260,18 +296,22 @@ class main extends THREE.Object3D {
             //Cambia el estado de la variable corriendo a false
             this.movimientos[0] = false;
             this.idle = true;
+            this.startAnimation = true;
             break;
         case KeyCode.KEY_A:
             this.movimientos[1] = false;
             this.idle = true;
+            this.startAnimation = true;
             break;
         case KeyCode.KEY_S:
             this.movimientos[2] = false;
             this.idle = true;
+            this.startAnimation = true;
             break;
         case KeyCode.KEY_D:
             this.movimientos[3] = false;
             this.idle = true;
+            this.startAnimation = true;
             break;
         }
     this.bimbot.fadeToAction('Idle', true, 1);
@@ -312,7 +352,23 @@ class main extends THREE.Object3D {
     this.setInfoColeccionables();
 
     //COLISIONES
-    this.checkCollisions();
+    
+    //Cajas
+    for(var i=0; i<this.cajas.length; i++){
+        this.checkCollisions(this.cajas[i]);
+    }
+    //Trampas
+    for(var i=0; i<this.trampas.length; i++){
+        this.checkCollisions(this.trampas[i]);
+    }
+    //Coleccionables
+    for(var i=0; i<this.coleccionables.length; i++){
+        if(this.checkCollisionsColeccionables(this.coleccionables[i])){
+            this.coleccionables.splice(i, 1);
+        }
+    }
+
+    //this.checkCollisions();
 
 
     //Vamos actualizando el mensaje de las vidas del robot
@@ -327,8 +383,12 @@ class main extends THREE.Object3D {
     //console.log("Estado: " + this.movimientos);
     //Hacia delante
 
+    //En el movimiento, defino unos límites para que no se salga del mapa
+
     if(this.movimientos[0] === true){
-        this.bimbot.position.z += this.velocidad;
+        if(this.bimbot.position.z < this.limiteZ){
+            this.bimbot.position.z += this.velocidad;
+        }
         if(this.startAnimation && this.currentAction != "Running"){
             this.bimbot.fadeToAction("Running", true, 1);
             this.startAnimation = false;
@@ -336,7 +396,9 @@ class main extends THREE.Object3D {
     }
     //Izquierda
     if(this.movimientos[1] === true){
-        this.bimbot.position.x += this.velocidad;
+        if(this.bimbot.position.x < this.limiteX){ 
+            this.bimbot.position.x += this.velocidad;
+        }
         if(this.startAnimation && this.currentAction != "Running"){
             this.bimbot.fadeToAction("Running", true, 1);
             this.startAnimation = false;
@@ -344,7 +406,9 @@ class main extends THREE.Object3D {
     }
     //Atras
     if(this.movimientos[2] === true){
-        this.bimbot.position.z -= this.velocidad;
+        if(this.bimbot.position.z > this.limiteZN){
+            this.bimbot.position.z -= this.velocidad;
+        }
         if(this.startAnimation && this.currentAction != "Running"){
             this.bimbot.fadeToAction("Running", true, 1);
             this.startAnimation = false;
@@ -352,7 +416,9 @@ class main extends THREE.Object3D {
     }
     //Derecha
     if(this.movimientos[3] === true){
-        this.bimbot.position.x -= this.velocidad;
+        if(this.bimbot.position.x > this.limiteXN){
+            this.bimbot.position.x -= this.velocidad;
+        }
         if(this.startAnimation && this.currentAction != "Running"){
             this.bimbot.fadeToAction("Running", true, 1);
             this.startAnimation = false;

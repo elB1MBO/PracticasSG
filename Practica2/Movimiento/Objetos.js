@@ -8,117 +8,163 @@ import { Caja } from '../MisModelos/Caja.js'
 import * as THREE from '../libs/three.module.js'
 import { GUI } from '../libs/dat.gui.module.js'
 
-class Objetos extends THREE.Object3D{
-    constructor(){
-        super();
-        //Reloj
-        this.clock = new THREE.Clock();
-        //Crear los obstáculos del escenario
-        this.createObstacles();
-        this.createCollectables();
-    }
+class Objetos extends THREE.Object3D {
+  constructor() {
+    super();
+    //Reloj
+    this.clock = new THREE.Clock();
 
-    createObstacles(){
-        /* this.tronco = this.importTronco();
-        this.tronco.position.z = 30;
-        this.tronco.rotation.y = Math.PI/2; */
+    //Vectores con los objetos
+    this.cajas = [];
+    this.coleccionables = [];
+    this.trampas = [];
 
-        //Cajas
-        this.caja = this.importCaja();
-        this.caja2 = this.importCaja();
-        this.caja2.position.x = -5;
-        this.add(this.caja);
-        this.add(this.caja2);
-        //Trampas troncos
-        this.trampaH = this.importTrampaH();
-        this.trampaH.position.z = 40;
-        this.trampaV = this.importTrampaV();
-        this.trampaV.position.z = 60;
-        this.add(this.trampaH);
-        this.add(this.trampaV);
-        //Pinchos:
-        this.trampaP = this.importTrampa();
-        this.trampaP2 = this.importTrampa();
-        this.trampaP2.position.x = 5;
-        this.trampaP3 = this.importTrampa();
-        this.trampaP3.scale.z = 2;
-        this.trampaP3.scale.x = 2;
-        this.trampaP3.position.z = 100;
-        this.add(this.trampaP);
-        this.add(this.trampaP2);
-        this.add(this.trampaP3);
-        
-    }
+    //Crear los obstáculos del escenario
+    this.createObstacles();
+    this.createCollectables();
 
-    createCollectables(){
-        this.tornillo = this.importTornillo();
-        this.tuerca = this.importTuerca();
+    //Colliders
+   /*  this.collidersTrampas = [this.trampaH.getTronco().getColliderTronco(), this.trampaP.getCollider()];
+    this.collidersParedes = [this.caja.getCollider()];
+    this.collidersColecc = [this.tornillo.getCollider(), this.tuerca.getCollider()]; */
+  }
 
-        this.add(this.tornillo);
-        this.add(this.tuerca);
-    }
+  getCajas(){
+    return this.cajas;
+  }
+  getColeccionables(){
+    return this.coleccionables;
+  }
+  getTrampas(){
+    return this.trampas;
+  }
 
+  createObstacles() {
+    /* this.tronco = this.importTronco();
+    this.tronco.position.z = 30;
+    this.tronco.rotation.y = Math.PI/2; */
+
+    //Cajas
+    var caja = this.importCaja();
+    this.cajas.push(caja);
+    this.add(caja);
+    caja = this.importCaja();
+    caja.position.x = -5;
+    this.cajas.push(caja);
+    this.add(caja);
     
+    //Trampas troncos
+    var trampaH = this.importTrampaH();
+    trampaH.position.z = 40;
+    var trampaV = this.importTrampaV();
+    trampaV.position.z = 60;
+    this.add(trampaH);
+    this.trampas.push(trampaH);
+    this.add(trampaV);
+    this.trampas.push(trampaV);
+    //Pinchos:
+    var ladoBase = 5;
+    this.trampaP = this.importTrampa(ladoBase);
+    this.trampaP2 = this.importTrampa(ladoBase * 2);
+    this.trampaP2.position.z = 150;
+    this.trampaP3 = this.importTrampa(ladoBase * 2.5);
+    this.trampaP3.position.z = 100;
+    this.add(this.trampaP);
+    this.add(this.trampaP2);
+    this.add(this.trampaP3);
+
+  }
+
+  createCollectables() {
+    var tornillo = this.importTornillo();
+    var tuerca = this.importTuerca();
+
+    this.coleccionables.push(tornillo);
+    this.coleccionables.push(tuerca);
+
+    this.add(tornillo);
+    this.add(tuerca);
+  }
+
+  // ******* ******* COLLIDERS ******* ******* 
+
+  getColliders(){
+    //Array de arrays
+    var arrayColliders = [this.collidersTrampas, this.collidersParedes, this.collidersColecc];
+    return arrayColliders;
+  }
+
   // ******* ******* Importar y colocar objetos externos ******* ******* 
   //TORNILLO
-  importTornillo(){
+  importTornillo() {
     var tornillo = new Tornillo();
     tornillo.scale.x = 0.2;
     tornillo.scale.y = 0.2;
     tornillo.scale.z = 0.2;
     tornillo.position.x = 3;
     tornillo.position.y = 2.5;
+    //Añade el collider del objeto importado a su array correspondiente
+    
+    /* this.collidersColecc.push(tornillo.getCollider()); */
     return tornillo;
   }
+
   //TUERCA
-  importTuerca(){
+  importTuerca() {
     var tuerca = new Tuerca();
     tuerca.scale.x = 0.2;
     tuerca.scale.y = 0.2;
     tuerca.scale.z = 0.2;
     tuerca.position.x = 6;
     tuerca.position.y = 2.5;
+    /* this.collidersColecc.push(tuerca.getCollider()); */
     return tuerca;
   }
   //TRONCO
-  importTronco(){
+  importTronco() {
     var tronco = new Tronco();
     tronco.scale.x = 0.6;
     tronco.scale.y = 0.6;
     tronco.scale.z = 0.6;
     tronco.position.x = -3;
     tronco.position.y = 1;
+    /* this.collidersParedes.push(tronco.getCollidersApoyo());
+    this.collidersTrampas.push(tronco.getColliderTronco()); */
     return tronco;
   }
   //TRAMPAS TRONCO
-  importTrampaH(){
+  importTrampaH() {
     var trampaH = new TrampaH();
     trampaH.scale.x = 0.6;
     trampaH.scale.y = 0.6;
     trampaH.scale.z = 0.6;
     trampaH.position.y = 2;
-
+    /* this.collidersParedes.push(trampaH.getTronco().getCollidersApoyo());
+    this.collidersTrampas.push(trampaH.getTronco().getColliderTronco()); */
     return trampaH;
   }
-  importTrampaV(){
+  importTrampaV() {
     var trampaV = new TrampaV();
     trampaV.scale.x = 0.6;
     trampaV.scale.y = 0.6;
     trampaV.scale.z = 0.6;
+    /* this.collidersParedes.push(trampaV.getTronco().getCollidersApoyo());
+    this.collidersTrampas.push(trampaV.getTronco().getColliderTronco()); */
     return trampaV;
   }
   //TRAMPA PINCHOS
-  importTrampa(){
-    var trampa = new TrampaPinchos();
+  importTrampa(ladoBase) {
+    var trampa = new TrampaPinchos(ladoBase);
     trampa.scale.x = 0.8;
     trampa.scale.y = 0.8;
     trampa.scale.z = 0.8;
     trampa.position.z = 4;
+    //this.collidersTrampas.push(trampa.getCollider());
     return trampa;
   }
 
   //CAJA
-  importCaja(){
+  importCaja() {
     var caja = new Caja();
     caja.position.z = 20;
     caja.position.x = 5;
@@ -128,17 +174,27 @@ class Objetos extends THREE.Object3D{
 
   // ******* ******* ******* ******* ******* ******* ******* 
 
-    update(){
-        var dt = this.clock.getDelta();
-        this.tornillo.update(dt);
-        this.tuerca.update(dt);
-        //this.tronco.update(dt);
-        this.trampaP.update(dt);
-        this.trampaP2.update(dt);
-        this.trampaP3.update(dt);
-        this.trampaH.update(dt);
-        this.trampaV.update(dt);
+  update() {
+    var dt = this.clock.getDelta();
+    /* this.tornillo.update(dt);
+    this.tuerca.update(dt); */
+    //this.tronco.update(dt);
+    this.trampaP.update(dt);
+    this.trampaP2.update(dt);
+    this.trampaP3.update(dt);
+    /* this.trampaH.update(dt);
+    this.trampaV.update(dt); */
+    
+    for(var i = 0; i<this.trampas.length; i++){
+      this.trampas[i].update(dt);
     }
+    for(var i = 0; i<this.cajas.length; i++){
+      this.cajas[i].update(dt);
+    }
+    for(var i = 0; i<this.coleccionables.length; i++){
+      this.coleccionables[i].update(dt);
+    }
+  }
 }
 
-export{Objetos}
+export { Objetos }

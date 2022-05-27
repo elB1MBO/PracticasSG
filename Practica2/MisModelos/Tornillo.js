@@ -4,7 +4,7 @@ import {CilindroBarrido} from './CilindroBarrido.js'
 import * as TWEEN from '../libs/tween.esm.js'
 
 class Tornillo extends THREE.Object3D {
-    constructor(gui, titleGUI){
+    constructor(){
         super();
         //Creamos y referenciamos un reloj para la animacion
         this.reloj = new THREE.Clock();
@@ -14,7 +14,6 @@ class Tornillo extends THREE.Object3D {
         //Radio de la cabeza del tornillo
         this.radioCabeza = 3;
 
-        //this.createGUI(gui, titleGUI);
         var cuerpo = new CilindroBarrido();
         cuerpo.position.y = -2.5;
         var cabeza = this.createCabeza();
@@ -22,8 +21,16 @@ class Tornillo extends THREE.Object3D {
         var csg = new CSG();
         csg.union([cabeza, cuerpo]);
         this.tornillo = csg.toMesh();
+
+        /* this.collider = this.createCollider();
+        this.tornillo.add(this.collider); */
+
         this.upDown();
         this.add(this.tornillo);
+    }
+
+    getCollider(){
+        return this.collider;
     }
 
     createCabeza(){
@@ -64,8 +71,12 @@ class Tornillo extends THREE.Object3D {
         return cruz;
     }
 
-    createGUI(gui, titleGUI){
-        var folder = gui.addFolder(titleGUI);
+    createCollider(){
+        var geom = new THREE.BoxGeometry(this.radioCabeza*2, this.radioCabeza*2, this.radioCabeza*2);
+        var material = new THREE.MeshToonMaterial({color:0xBF3492});
+        var collider = new THREE.Mesh(geom, material);
+        collider.position.y = -0.5;
+        return collider;
     }
 
     //Animacion de subir y bajar

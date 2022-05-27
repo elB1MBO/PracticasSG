@@ -33,6 +33,8 @@ class main extends THREE.Object3D {
       this.objetos = new Objetos();
       this.add(this.objetos);
 
+      this.cajas = this.objetos.getCajas();
+
       //this.bimbot.fadeToAction('Idle', true, 1);
 
       window.addEventListener("keydown", (event) => this.onKeyDown(event));
@@ -40,7 +42,22 @@ class main extends THREE.Object3D {
       window.addEventListener("keypress", (event) => this.onKeyPressed(event));
   }
 
-  
+  //Funcion que comprueba si dos boxes han colisionado
+  intersectBoxes (b1, b2) {
+    var vectorBetweenBoxes = new THREE.Vector2();
+    vectorBetweenBoxes.subVectors (new THREE.Vector2 (b1.position.x, b1.position.z),
+                                   new THREE.Vector2 (b2.position.x, b2.position.z));
+    return (vectorBetweenBoxes.length() < 2);
+  }
+
+  checkCollisions(objeto){
+      if(this.intersectBoxes(this.bimbot, objeto)){
+        console.log("Bimbot ha colisionado, pierde una vida y vuelve al inicio.");
+        this.bimbot.position.x = 0;
+        this.bimbot.position.z = 0;
+        this.bimbot.setVidas(this.bimbot.getVidas()-1);
+      }
+  }
 
   getBimbot(){
       return this.bimbot;
@@ -131,6 +148,9 @@ class main extends THREE.Object3D {
     this.bimbot.update();
     this.objetos.update();
 
+    for(var i=0; i<this.cajas.length; i++){
+        this.checkCollisions(this.cajas[i]);
+    }
 
     /* if(this.idle==true){
         this.bimbot.fadeToAction('Idle', true, 1);
@@ -142,93 +162,40 @@ class main extends THREE.Object3D {
     var play = "";
 
     if(this.movimientos[0] == true){
-        console.log("Ha pulsado la W");
         this.bimbot.position.z += 0.3;
         if(this.startAnimation){
             //this.bimbot.fadeToAction("Running", true, 1);
             play="Running";
             this.startAnimation = false;
         }
-    } else {
-        console.log("Ha soltado la W");
     }
     //Izquierda
     if(this.movimientos[1] == true){
-        console.log("Ha pulsado la A");
         this.bimbot.position.x += 0.3;
         if(this.startAnimation){
             //this.bimbot.fadeToAction("Running", true, 1);
             play="Running";
             this.startAnimation = false;
         }
-    } else {
-        console.log("Ha soltado la A");
     }
     //Atras
     if(this.movimientos[2] == true){
-        console.log("Ha pulsado la S");
         this.bimbot.position.z -= 0.3;
         if(this.startAnimation){
             //this.bimbot.fadeToAction("Running", true, 1);
             play="Running";
             this.startAnimation = false;
         }
-    } else {
-        console.log("Ha soltado la S");
     }
     //Derecha
     if(this.movimientos[3] == true){
-        console.log("Ha pulsado la D");
         this.bimbot.position.x -= 0.3;
         if(this.startAnimation){
             //this.bimbot.fadeToAction("Running", true, 1);
             play="Running";
             this.startAnimation = false;
         }
-    } else {
-        console.log("Ha soltado la D");
     }
-
-    if(this.currentAction != play){
-        const toPlay = this.bimbot.animations.get(play);
-        const current = this.bimbot.animations.get(this.currentAction);
-
-        console.log("Accion anterior:" + current + " Accion a ejecutar: "+toPlay);
-        current.fadeOut(1);
-        toPlay.reset().fadeIn(1).play();
-    }
-/* 
-    switch (this.movimientos) {
-        case this.movimientos[0] == true:
-            console.log("Estado: " + this.movimientos[0]);
-            this.bimbot.position.z += 0.5;
-            this.bimbot.fadeToAction("Running", true, 1);
-            break;
-        case this.movimientos[1]:
-            this.bimbot.position.x += 0.5;
-            this.bimbot.fadeToAction("Running", true, 1);
-            break;
-        case this.movimientos[2]:
-            this.bimbot.position.z -= 0.5;
-            this.bimbot.fadeToAction("Running", true, 1);
-            break;
-        case this.movimientos[3]:
-            this.bimbot.position.x -= 0.5;
-            this.bimbot.fadeToAction("Running", true, 1);
-            break;
-        case this.movimientos[4]:
-            
-            break;
-
-        default:
-            break;
-    } */
-
-    //console.log("Estados 2: " + this.movimientos);
-
-    //var camera = this.scene.getCamera();
-    //this.camara.position.set(this.bimbot.position.x, this.bimbot.position.y+10, this.bimbot.position.z-20);
-
   }
 
 }

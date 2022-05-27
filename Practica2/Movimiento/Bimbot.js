@@ -149,7 +149,7 @@ class Bimbot extends THREE.Object3D {
     //Indicamos el modelo que debe seguir:
     var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     // También se indica dónde se coloca
-    camera.position.set(this.position.x, this.position.y+15, this.position.z-20);
+    camera.position.set(0, this.position.y+15, this.position.z-20);
     // Y hacia dónde mira
     camera.lookAt(this.position);
     return camera;
@@ -178,7 +178,7 @@ class Bimbot extends THREE.Object3D {
     return box; */
 
     var geom = new THREE.BoxGeometry(2, 4, 2);
-    var material = new THREE.MeshToonMaterial(0x3492);
+    var material = new THREE.MeshNormalMaterial({visible:false});
     var boxBB = new THREE.Mesh(geom, material);
     boxBB.position.y = 2;
     return boxBB;
