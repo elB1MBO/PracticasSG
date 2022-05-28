@@ -28,6 +28,10 @@ class Bimbot extends THREE.Object3D {
     }, undefined, ( e ) => { console.error( e ); }
     );
 
+    this.bbox = new THREE.Box3();
+    this.caja = this.createBB();
+    this.add(this.caja);
+
     //Creamos la camara y la añadimos a this
     this.camara = this.createCamera();
     this.add(this.camara);
@@ -35,6 +39,19 @@ class Bimbot extends THREE.Object3D {
 
   getModelo(){
     return this.model;
+  }
+
+  getBBox(){
+    return this.bbox;
+  }
+
+  createBB(){
+    var geom = new THREE.BoxGeometry(2, 4, 2);
+    var material = new THREE.MeshNormalMaterial({visible:false});
+    var caja = new THREE.Mesh(geom, material);
+    caja.position.y = 2;
+    caja.geometry.computeBoundingBox();
+    return caja;
   }
 
   // ******* ******* ******* ******* ******* ******* ******* 
@@ -133,6 +150,7 @@ class Bimbot extends THREE.Object3D {
     var dt = this.clock.getDelta();
     if (this.mixer) this.mixer.update (dt);
 
+    this.bbox.copy(this.caja.geometry.boundingBox).applyMatrix4(this.caja.matrixWorld);
     TWEEN.update(dt);
   }
 }

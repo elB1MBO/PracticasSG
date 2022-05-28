@@ -64,15 +64,18 @@ class Objetos extends THREE.Object3D {
     this.trampas.push(trampaV);
     //Pinchos:
     var ladoBase = 5;
-    this.trampaP = this.importTrampa(ladoBase);
-    this.trampaP2 = this.importTrampa(ladoBase * 2);
-    this.trampaP2.position.z = 150;
-    this.trampaP3 = this.importTrampa(ladoBase * 2.5);
-    this.trampaP3.position.z = 100;
-    this.add(this.trampaP);
-    this.add(this.trampaP2);
-    this.add(this.trampaP3);
-
+    var trampaP = this.importTrampa(ladoBase);
+    this.trampas.push(trampaP);
+    this.add(trampaP);
+    trampaP = this.importTrampa(ladoBase*2);
+    trampaP.position.z = 150;
+    this.trampas.push(trampaP);
+    this.add(trampaP);
+    trampaP = this.importTrampa(ladoBase*2.5);
+    trampaP.position.x = 10;
+    trampaP.position.z = 100;
+    this.trampas.push(trampaP);
+    this.add(trampaP);
   }
 
   createCollectables() {
@@ -176,15 +179,7 @@ class Objetos extends THREE.Object3D {
 
   update() {
     var dt = this.clock.getDelta();
-    /* this.tornillo.update(dt);
-    this.tuerca.update(dt); */
-    //this.tronco.update(dt);
-    this.trampaP.update(dt);
-    this.trampaP2.update(dt);
-    this.trampaP3.update(dt);
-    /* this.trampaH.update(dt);
-    this.trampaV.update(dt); */
-    
+        
     for(var i = 0; i<this.trampas.length; i++){
       this.trampas[i].update(dt);
     }
