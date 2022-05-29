@@ -4,13 +4,14 @@ class Caja extends THREE.Object3D {
     constructor(){
         super();
         this.caja = this.createCaja();
-        /* this.collider = this.createCollider();
-        this.caja.add(this.collider); */
+        
+        this.bbox = new THREE.Box3();
+        this.caja.geometry.computeBoundingBox();
         this.add(this.caja);
     }
 
-    getCollider(){
-        return this.collider;
+    getBBox(){
+        return this.bbox;
     }
 
     createCaja(){
@@ -29,15 +30,8 @@ class Caja extends THREE.Object3D {
         return caja;
     }
 
-    createCollider(){
-        var geom = new THREE.BoxGeometry(3.5,3.5,3.5);
-        var material = new THREE.MeshToonMaterial({color:0xDD0331});
-        var collider = new THREE.Mesh(geom, material);
-        return collider;
-    }
-
     update(){ //dt=delta time
-        
+        this.bbox.copy(this.caja.geometry.boundingBox).applyMatrix4(this.caja.matrixWorld);
     }
 }
 

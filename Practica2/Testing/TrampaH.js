@@ -1,5 +1,4 @@
 import * as THREE from '../libs/three.module.js'
-import {CSG} from '../libs/CSG-v2.js'
 import * as TWEEN from '../libs/tween.esm.js'
 import {Tronco} from './Tronco.js'
 
@@ -10,13 +9,14 @@ class TrampaH extends THREE.Object3D {
         this.trampaH = new Tronco();
         this.trampaH.rotation.z = Math.PI/2;
         this.trampaH.position.x = -6;
+
         //Animacion de la trampa horizontal
         this.inOut();
         this.add(this.trampaH);
     }
 
-    getTronco(){
-        return this.trampaH;
+    getBBox(){
+        return this.trampaH.getBBox();
     }
     //Animacion Horizontal
     inOut(){
@@ -28,17 +28,12 @@ class TrampaH extends THREE.Object3D {
             .onUpdate(() => {
                 this.trampaH.position.x = origen.x;
                 this.trampaH.position.y = origen.y;
-                //this.trampaH.boxTronco.copy(this.trampaH.getTronco().geometry.boundingBox).applyMatrix4(this.trampaH.getTronco().matrixWorld);
-            })
-            .onComplete(() => {
-                //origen.y = -10;
             })
             .repeat(Infinity)
             .yoyo(true);
         
         movimiento.start();
-        //TWEEN.update();
-        //TWEEN.add(movimiento);
+
     }
 
     update(dt){

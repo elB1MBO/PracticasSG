@@ -12,27 +12,24 @@ class TrampaV extends THREE.Object3D {
         this.add(this.trampaV);
     }
 
-    balanceo(){
+    getBBox(){
+        return this.trampaV.getBBox();
+    }
 
+    balanceo(){
         var origen = {x: -this.trampaV.largoApoyo/3, y: 3};
         var destino = {x: this.trampaV.largoApoyo/3, y: 3};
-        /* var origen = {p: cp.getPoint(0)};
-        var destino = {p: cp.getPoint(2)}; */
         var movimiento = new TWEEN.Tween(origen)
-            .to(destino, 1800) //2 seg
+            .to(destino, 1800)
             .easing(TWEEN.Easing.Quadratic.InOut)
-            //Qué hacer con esos parámetros
             .onUpdate (() => {  
                 this.trampaV.position.x = origen.x;
                 this.trampaV.position.y = origen.y;
-
             })
             .repeat(Infinity)
             .yoyo(true);
         
         movimiento.start();
-        //TWEEN.update();
-        //TWEEN.add(movimiento);
     }
 
     update(dt){

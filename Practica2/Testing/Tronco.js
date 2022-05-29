@@ -27,20 +27,23 @@ class Tronco extends THREE.Object3D {
         this.tronco.add(this.pinchos);
         this.tronco.geometry.computeBoundingBox();
         this.boxTronco.copy(this.tronco.geometry.boundingBox).applyMatrix4(this.tronco.matrixWorld);
-        this.boxHelper = new THREE.Box3Helper(this.boxTronco, 0xfff100);
-        this.add(this.boxHelper);
+
 
         this.apoyos = this.createApoyos();
         this.boxApoyos = new THREE.Box3();
         this.apoyos.geometry.computeBoundingBox();
-        this.boxHelper2 = new THREE.Box3Helper(this.boxApoyos, 0xfff100);
-        this.add(this.boxHelper2);
+        /* this.boxHelper2 = new THREE.Box3Helper(this.boxApoyos, 0xfff100);
+        this.add(this.boxHelper2); */
 
         this.troncoConApoyos = new THREE.Mesh();
         this.troncoConApoyos.add(this.tronco);
         this.troncoConApoyos.add(this.apoyos);
 
         this.add(this.troncoConApoyos);
+    }
+
+    getBBox(){
+        return this.boxTronco;
     }
 
     getTronco(){
@@ -84,6 +87,9 @@ class Tronco extends THREE.Object3D {
         }
         
         var pinchos = csg.toMesh();
+
+        //pinchos.geometry.computeBoundingBox();
+
         pinchos.position.z = -this.largoTronco/this.numFilas;
         return pinchos;
     }

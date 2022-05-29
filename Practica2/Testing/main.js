@@ -56,10 +56,6 @@ class main extends THREE.Object3D {
     }
 
     checkCollisions(objeto) {
-        /* var centro = new THREE.Vector3();
-        this.bimbot.getBBox().getCenter(centro);
-        var distancia = objeto.getBBox().distanceToPoint(centro);
-        console.log("DISTANCIA: "+distancia); */
         if(objeto.getBBox().intersectsBox(this.bimbot.getBBox())){
             console.log("Bimbot ha colisionado, pierde una vida y vuelve al inicio.");
             this.bimbot.position.x = 0;
@@ -67,13 +63,13 @@ class main extends THREE.Object3D {
         }
     }
     checkCollisionsCaja(objeto) {
-        if (this.intersectBoxes(this.bimbot, objeto)) {
+        if (objeto.getBBox().intersectsBox(this.bimbot.getBBox())) {
             console.log("Choca con una caja");
         }
     }
 
     checkCollisionsColeccionables(objeto) {
-        if (this.intersectBoxes(this.bimbot, objeto)) {
+        if (objeto.getBBox().intersectsBox(this.bimbot.getBBox())) {
             console.log("Bimbot ha encontrado un coleccionable, lo recoge.");
             this.objetos.remove(objeto);
             this.recogeColeccionable();
@@ -84,7 +80,6 @@ class main extends THREE.Object3D {
 
     recogeColeccionable() {
         console.log("HA RECOGIDO UN COLECCIONABLE");
-        //this.bimbot.setColeccionables(this.bimbot.getColeccionables() + 1);
     }
 
     getBimbot() {
@@ -154,7 +149,6 @@ class main extends THREE.Object3D {
         switch (x) {
             case KeyCode.KEY_SPACE:
                 this.bimbot.fadeToAction('Jump', false, 1);
-                //this.bimbot.position.y += 1;
                 break;
             case KeyCode.KEY_Q:
                 this.bimbot.fadeToAction("Wave", false, 0.6);
@@ -173,8 +167,8 @@ class main extends THREE.Object3D {
         var dt = this.clock.getDelta();
         if (this.mixer) this.mixer.update(dt);
 
-        this.bimbot.update();
-        this.objetos.update();
+        this.bimbot.update(dt);
+        this.objetos.update(dt);
 
         //Cajas
         for (var i = 0; i < this.cajas.length; i++) {
@@ -190,11 +184,7 @@ class main extends THREE.Object3D {
                 this.coleccionables.splice(i, 1);
             }
         }
-        /* if(this.idle==true){
-            this.bimbot.fadeToAction('Idle', true, 1);
-        } */
 
-        //console.log("Estado: " + this.movimientos);
         //Hacia delante
 
         var play = "";

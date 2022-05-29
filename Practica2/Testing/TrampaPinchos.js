@@ -10,23 +10,13 @@ class TrampaPinchos extends THREE.Object3D {
         this.velocidad = 0.75;
 
         this.alturaBase = 0.3;
-        //this.ladoBase = 5;
         this.ladoBase = ladoBase;
 
         this.trampa = this.createBase();
         this.pinchosP = this.createPinchos();
 
-        /* this.collider = this.createCollider();
-        this.pinchosP.add(this.collider); */
-        
-        /* this.agujeros = this.createAgujeros();
-        this.trampa.add(this.agujeros);*/
-
         //BOUNDING BOX
         this.bbox = new THREE.Box3();
-        //this.bbox.copy(this.pinchosP.geometry.boundingBox).applyMatrix4(this.pinchosP.matrixWorld);
-        /* this.boxHelper = new THREE.Box3Helper(this.bbox, 0xffff00);
-        this.add(this.boxHelper); */
 
         this.trampa.add(this.pinchosP);
         this.upDown();
@@ -89,17 +79,11 @@ class TrampaPinchos extends THREE.Object3D {
             .onUpdate(() => {
                 this.pinchosP.position.x = origen.x;
                 this.pinchosP.position.y = origen.y;
-                
-            })
-            .onComplete(() => {
-                //origen.y = -10;
             })
             .repeat(Infinity)
             .yoyo(true);
         
         movimiento.start();
-        //TWEEN.update();
-        //TWEEN.add(movimiento);
     }
 
     update(dt){

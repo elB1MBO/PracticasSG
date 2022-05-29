@@ -1,13 +1,7 @@
 import * as THREE from '../libs/three.module.js'
 import { GLTFLoader } from '../libs/GLTFLoader.js'
 import * as TWEEN from '../libs/tween.esm.js'
-import { Tornillo } from '../MisModelos/Tornillo.js'
-import { Tuerca } from '../MisModelos/Tuerca.js'
-import { Tronco } from '../MisModelos/Tronco.js'
-import { TrampaPinchos } from '../MisModelos/TrampaPinchos.js'
-import { Caja } from '../MisModelos/Caja.js'
 
- 
 class Bimbot extends THREE.Object3D {
   constructor() {
     super();
@@ -29,6 +23,7 @@ class Bimbot extends THREE.Object3D {
     );
 
     this.bbox = new THREE.Box3();
+    //Para hacer la caja de colision del bot, he creado una caja con un tamaño adecuado
     this.caja = this.createBB();
     this.add(this.caja);
 
@@ -46,7 +41,7 @@ class Bimbot extends THREE.Object3D {
   }
 
   createBB(){
-    var geom = new THREE.BoxGeometry(2, 4, 2);
+    var geom = new THREE.BoxGeometry(1.75, 4, 1.75);
     var material = new THREE.MeshNormalMaterial({visible:false});
     var caja = new THREE.Mesh(geom, material);
     caja.position.y = 2;
@@ -145,11 +140,12 @@ class Bimbot extends THREE.Object3D {
   
   // ******* ******* ******* ******* ******* ******* ******* 
   
-  update () {
+  update (dt) {
     // Hay que pedirle al mixer que actualice las animaciones que controla
-    var dt = this.clock.getDelta();
+    //var dt = this.clock.getDelta();
     if (this.mixer) this.mixer.update (dt);
 
+    //Actualizar la bounding box a la posicion del bimbot (de su caja de colision)
     this.bbox.copy(this.caja.geometry.boundingBox).applyMatrix4(this.caja.matrixWorld);
     TWEEN.update(dt);
   }

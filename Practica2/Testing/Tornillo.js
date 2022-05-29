@@ -14,6 +14,8 @@ class Tornillo extends THREE.Object3D {
         //Radio de la cabeza del tornillo
         this.radioCabeza = 3;
 
+        this.bbox = new THREE.Box3();
+
         var cuerpo = new CilindroBarrido();
         cuerpo.position.y = -2.5;
         var cabeza = this.createCabeza();
@@ -22,15 +24,14 @@ class Tornillo extends THREE.Object3D {
         csg.union([cabeza, cuerpo]);
         this.tornillo = csg.toMesh();
 
-        /* this.collider = this.createCollider();
-        this.tornillo.add(this.collider); */
+        this.tornillo.geometry.computeBoundingBox();
 
         this.upDown();
         this.add(this.tornillo);
     }
 
-    getCollider(){
-        return this.collider;
+    getBBox(){
+        return this.bbox;
     }
 
     createCabeza(){
@@ -71,14 +72,6 @@ class Tornillo extends THREE.Object3D {
         return cruz;
     }
 
-    createCollider(){
-        var geom = new THREE.BoxGeometry(this.radioCabeza*2, this.radioCabeza*2, this.radioCabeza*2);
-        var material = new THREE.MeshToonMaterial({color:0xBF3492});
-        var collider = new THREE.Mesh(geom, material);
-        collider.position.y = -0.5;
-        return collider;
-    }
-
     //Animacion de subir y bajar
     upDown(){
         var origen = {x: 0, y: -5};
@@ -90,24 +83,18 @@ class Tornillo extends THREE.Object3D {
                 this.tornillo.position.x = origen.x;
                 this.tornillo.position.y = origen.y;
             })
-            .onComplete(() => {
-                //origen.y = -10;
-            })
             .repeat(Infinity)
             .yoyo(true);
         
         movimiento.start();
-        //TWEEN.update();
-        //TWEEN.add(movimiento);
     }
 
     update(dt){ //dt=delta time
-        //var dt = this.reloj.getDelta(); //Segundos desde la ultima llamada
         this.tornillo.rotation.x += this.velocidad * dt;
         this.tornillo.rotation.x += this.velocidad * dt;
         this.tornillo.rotation.z += this.velocidad * dt;
 
-        //this.upDown(this.velocidad*dt);
+        this.bbox.copy(this.tornillo.geometry.boundingBox).applyMatrix4(this.tornillo.matrixWorld);
         TWEEN.update();
     }
 }
