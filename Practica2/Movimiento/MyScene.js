@@ -163,9 +163,9 @@ class MyScene extends THREE.Scene {
     this.add (this.spotLight);
 
     var endLight = new THREE.SpotLight(0xB70000, 1);
-    endLight.position.set(0,20, 150);
+    endLight.position.set(0,5,160);
     var final = new THREE.Object3D();
-    final.position.set(0,5,160);
+    final.position.set(0,0,160);
     this.add(final);
     endLight.target = final;
     this.add(endLight);

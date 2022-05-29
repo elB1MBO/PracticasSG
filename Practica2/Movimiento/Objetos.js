@@ -191,7 +191,11 @@ class Objetos extends THREE.Object3D{
       this.coleccionables.push(tornillo);
       this.add(tornillo);
       
+      //Esta última tuerca señala el punto de checkpoint
       tuerca = this.importTuerca();
+      tuerca.scale.x = 0.4;
+      tuerca.scale.y = 0.4;
+      tuerca.scale.z = 0.4;
       tuerca.position.z = 160;
       boxHelper = new THREE.Box3Helper(tuerca.getBBox(), 0x40A0E4);
       this.add(boxHelper);

@@ -19,12 +19,21 @@ class main extends THREE.Object3D {
         this.startAnimation = false; //variable que marca si una animación ya ha empezado o no
         this.currentAction = "Idle"; //Animación actual
 
+        //Checkpoint
+        this.checkpoint = new THREE.Vector3(0,0,0);
+        //Bool que indica si ha llegado al final del mapa, que sabe para saber que tiene que volver al inicio
+        this.final = false;
+
         this.bimbot = new Bimbot();
+        /* this.bimbot.traverseVisible((nodo) => {
+            nodo.castShadow = true;
+            nodo.receiveShadow = true;
+        }); */
         this.boxHelper = new THREE.Box3Helper(this.bimbot.getBBox(), 0xffff00);
         this.add(this.boxHelper);
 
         this.animationsMap = this.bimbot.animations; //Mapa de las animaciones del bimbot
-
+        this.bimbot.position.z = 150;
         this.add(this.bimbot);
 
         for (var i = 0; i < this.bimbot.animations.length; i++) {
@@ -34,6 +43,31 @@ class main extends THREE.Object3D {
 
         this.objetos = new Objetos();
         this.add(this.objetos);
+
+        //Colisiones:
+
+        this.cajas = this.objetos.getCajas();
+        this.coleccionables = this.objetos.getColeccionables();
+        this.trampas = this.objetos.getTrampas();
+
+        //Cuando el robot llegue a esta caja, saldrá un mensaje de que tiene que volver al comienzo, pero la velocidad de las trampas habrá aumentado
+        this.end = this.createEnd();
+        this.endBox = new THREE.Box3();
+        //this.endBox.copy(this.end.geometry.boundingBox).applyMatrix4(this.end.matrixWorld);
+        var endHelper = new THREE.Box3Helper(this.endBox, 0xABCDEF);
+        this.add(endHelper);
+        this.add(this.end);
+
+        //Defino los limites en los que puede moverse por el mapa
+        this.limiteZ = 170;
+        this.limiteZN = -15;
+        this.limiteX = 8;
+        this.limiteXN = -8;
+
+        //para que la escena sepa cuándo tiene que actualizar la cámara
+        this.gameResumed = false;
+
+        //****** LISTENERS ********/
 
         window.addEventListener("keydown", (event) => this.vidas(event));
 
@@ -52,39 +86,43 @@ class main extends THREE.Object3D {
 
         window.addEventListener("keydown", (event) => this.keyColeccionable(event));
 
-        //Colisiones:
+    }
 
-        this.cajas = this.objetos.getCajas();
-        this.coleccionables = this.objetos.getColeccionables();
-        this.trampas = this.objetos.getTrampas();
+    // ******* ******* ******* POINTS ******* ******* *******
 
-        //Cuando el robot llegue a esta caja, saldrá un mensaje de que tiene que volver al comienzo, pero la velocidad de las trampas habrá aumentado
-        //Los coleccionables respawnarán -> en sitios aleatorios dentro del entorno?
-        this.cajaFinal = this.createBoxCollider();
-        this.cajaFinal.scale.x = 4;
-        this.cajaFinal.position.z = 160;
-        this.add(this.cajaFinal);
+    createEnd() {
+        var geom = new THREE.BoxGeometry(5, 5, 5);
+        var material = new THREE.MeshToonMaterial({ visible: false });
 
-        //Defino los limites en los que puede moverse por el mapa
-        this.limiteZ = 170;
-        this.limiteZN = -15;
-        this.limiteX = 8;
-        this.limiteXN = -8;
+        var caja = new THREE.Mesh(geom, material);
+        caja.position.y = 2.5;
+        caja.position.z = 160;
+        caja.geometry.computeBoundingBox();
+        return caja;
+    }
 
-        //para que la escena sepa cuándo tiene que actualizar la cámara
-        this.gameResumed = false;
+    reachEnd(){
+        if(this.endBox.containsBox(this.bimbot.getBBox())){
+            console.log("Ha llegado al final");
+            this.checkpoint.z = this.end.position.z;
+            console.log(this.checkpoint);
+            //Mueve el punto final al comienzo del mapa
+            if(this.final){
+                this.end.position.y = -10;
+                this.victoria();
+            }else{
+                this.final = true;
+            }
+            this.end.position.z = 0;
+        }
+    }
 
+    victoria(){
+        alert("¡HAS GANADO!");
     }
 
     // ******* ******* ******* COLLIDERS ******* ******* *******
 
-    createBoxCollider() {
-        var geom = new THREE.BoxGeometry(5, 5, 5);
-        var material = new THREE.MeshToonMaterial({ color: 0x049ef4 });
-
-        var caja = new THREE.Mesh(geom, material);
-        return caja;
-    }
     //Funcion que comprueba si dos boxes han colisionado
     intersectBoxes(b1, b2) {
         var vectorBetweenBoxes = new THREE.Vector2();
@@ -95,9 +133,12 @@ class main extends THREE.Object3D {
 
     checkCollisions(objeto) {
         if(objeto.getBBox().intersectsBox(this.bimbot.getBBox())){
-            console.log("Bimbot ha colisionado, pierde una vida y vuelve al inicio.");
-            this.bimbot.position.x = 0;
-            this.bimbot.position.z = 0;
+            console.log("Bimbot ha colisionado, pierde una vida y vuelve al checkpoint.");
+            //this.bimbot.position = this.checkpoint;
+            console.log(this.checkpoint);
+            this.bimbot.position.x = this.checkpoint.x;
+            this.bimbot.position.y = this.checkpoint.y;
+            this.bimbot.position.z = this.checkpoint.z;
             this.hit(); //pierde una vida
         }
     }
@@ -116,6 +157,8 @@ class main extends THREE.Object3D {
         }
         return false;
     }
+
+    
 
     // ******* ******* ******* VIDA ******* ******* *******
 
@@ -326,6 +369,10 @@ class main extends THREE.Object3D {
         this.objetos.update(dt);
 
         this.setInfoColeccionables();
+
+        //Comprobamos si ha llegado al final
+        this.endBox.copy(this.end.geometry.boundingBox).applyMatrix4(this.end.matrixWorld);
+        this.reachEnd();
 
         //Cajas
         for (var i = 0; i < this.cajas.length; i++) {
