@@ -3,10 +3,8 @@
 
 import * as THREE from '../libs/three.module.js'
 import { GUI } from '../libs/dat.gui.module.js'
-import { TrackballControls } from '../libs/TrackballControls.js'
 
 // Clases de mi proyecto
-import { Bimbot } from './Bimbot.js';
 import {main} from './main.js';
 
 
@@ -53,70 +51,6 @@ class MyScene extends THREE.Scene {
     this.add (this.model);
   }
 
-  createObstacles(){
-    this.tornillo = this.importTornillo();
-    this.tuerca = this.importTuerca();
-    this.tronco = this.importTronco();
-    this.trampaP = this.importTrampa();
-    this.caja = this.importCaja();
-
-    this.add(this.tornillo);
-    this.add(this.tuerca);
-    this.add(this.tronco);
-    this.add(this.trampaP);
-    this.add(this.caja);
-  }
-
-  // ******* ******* Importar y colocar objetos externos ******* ******* 
-  //TORNILLO
-  importTornillo(){
-    var tornillo = new Tornillo();
-    tornillo.scale.x = 0.2;
-    tornillo.scale.y = 0.2;
-    tornillo.scale.z = 0.2;
-    tornillo.position.x = 3;
-    tornillo.position.y = 2.5;
-    return tornillo;
-  }
-  //TUERCA
-  importTuerca(){
-    var tuerca = new Tuerca();
-    tuerca.scale.x = 0.2;
-    tuerca.scale.y = 0.2;
-    tuerca.scale.z = 0.2;
-    tuerca.position.x = 6;
-    tuerca.position.y = 2.5;
-    return tuerca;
-  }
-  //TRONCO
-  importTronco(){
-    var tronco = new Tronco();
-    tronco.scale.x = 0.6;
-    tronco.scale.y = 0.6;
-    tronco.scale.z = 0.6;
-    tronco.position.x = -3;
-    tronco.position.y = 1;
-    return tronco;
-  }
-  //TRAMPA PINCHOS
-  importTrampa(){
-    var trampa = new TrampaPinchos();
-    trampa.scale.x = 0.8;
-    trampa.scale.y = 0.8;
-    trampa.scale.z = 0.8;
-    trampa.position.z = 4;
-    return trampa;
-  }
-
-  //CAJA
-  importCaja(){
-    var caja = new Caja();
-    caja.position.z = 1;
-    caja.position.x = 1;
-    caja.position.y = 0.3;
-    return caja;
-  }
-
   // ******* ******* ******* ******* ******* ******* ******* 
   
 
@@ -144,6 +78,9 @@ class MyScene extends THREE.Scene {
     // El suelo lo bajamos la mitad de su altura para que el origen del mundo se quede en su lado superior
     ground.position.y = -0.1;
     ground.position.z = 70;
+
+    //para que se vea la sombra en el suelo
+    ground.receiveShadow = true;
     
     // Que no se nos olvide añadirlo a la escena, que en este caso es  this
     this.add (ground);
@@ -175,21 +112,38 @@ class MyScene extends THREE.Scene {
   }
   
   createLights () {
-    // Se crea una luz ambiental, evita que se vean complentamente negras las zonas donde no incide de manera directa una fuente de luz
+    /* // Se crea una luz ambiental, evita que se vean complentamente negras las zonas donde no incide de manera directa una fuente de luz
     // La luz ambiental solo tiene un color y una intensidad
     // Se declara como   var   y va a ser una variable local a este método
     //    se hace así puesto que no va a ser accedida desde otros métodos
     var ambientLight = new THREE.AmbientLight(0xccddee, 0.35);
     // La añadimos a la escena
-    this.add (ambientLight);
+    this.add (ambientLight); */
     
     // Se crea una luz focal que va a ser la luz principal de la escena
     // La luz focal, además tiene una posición, y un punto de mira
     // Si no se le da punto de mira, apuntará al (0,0,0) en coordenadas del mundo
     // En este caso se declara como   this.atributo   para que sea un atributo accesible desde otros métodos.
-    this.spotLight = new THREE.SpotLight( 0xffffff, this.guiControls.lightIntensity );
-    this.spotLight.position.set( 180, 100, 140 );
+    this.spotLight = new THREE.SpotLight( 0xDEC554, this.guiControls.lightIntensity);
+    this.spotLight.position.set( 0, 200, 100 );
+    this.spotLight.castShadow = true;
+
+    this.spotLight.shadow.mapSize.width = 1024;
+    this.spotLight.shadow.mapSize.height = 1024;
+
+    this.spotLight.shadow.camera.near = 0.5;
+    this.spotLight.shadow.camera.far = 5000;
+
+    this.spotLight.shadow.focus = 1;
+    this.spotLight.intensity = 10;
+
     this.add (this.spotLight);
+
+    /* var sun = new THREE.DirectionalLight(0xB39460);
+    this.add(sun); */
+
+    var skyGroundLight = new THREE.HemisphereLight(0x5E5E98, 0x5A845A);
+    this.add(skyGroundLight);
   }
   
   createRenderer (myCanvas) {
@@ -197,6 +151,9 @@ class MyScene extends THREE.Scene {
     
     // Se instancia un Renderer   WebGL
     var renderer = new THREE.WebGLRenderer();
+
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
     
     // Se establece un color de fondo en las imágenes que genera el render
     renderer.setClearColor(new THREE.Color(0xEEEEEE), 1.0);

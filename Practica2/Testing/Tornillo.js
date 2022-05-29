@@ -26,6 +26,11 @@ class Tornillo extends THREE.Object3D {
 
         this.tornillo.geometry.computeBoundingBox();
 
+        this.tornillo.traverseVisible((nodo) => {
+            nodo.castShadow = true;
+            nodo.receiveShadow = true;
+        });
+
         this.upDown();
         this.add(this.tornillo);
     }

@@ -19,6 +19,11 @@ class TrampaPinchos extends THREE.Object3D {
         this.bbox = new THREE.Box3();
 
         this.trampa.add(this.pinchosP);
+
+        this.trampa.traverseVisible((nodo) => {
+            nodo.castShadow = true;
+            nodo.receiveShadow = true;
+        });
         this.upDown();
         this.add(this.trampa);
     }

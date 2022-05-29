@@ -14,6 +14,8 @@ class Tuerca extends THREE.Object3D {
 
         this.rt = 4;
 
+        this.bbox = new THREE.Box3();
+
         var cuerpo = this.createTuerca();
         var hueco = new CilindroBarrido();
 
@@ -21,15 +23,19 @@ class Tuerca extends THREE.Object3D {
         csg.subtract([cuerpo, hueco]);
         this.tuerca = csg.toMesh();
 
-        /* this.collider = this.createCollider();
-        this.tuerca.add(this.collider); */
+        this.tuerca.traverseVisible((nodo) => {
+            nodo.castShadow = true;
+            nodo.receiveShadow = true;
+        });
+
+        this.tuerca.geometry.computeBoundingBox();
 
         this.upDown();
         this.add(this.tuerca);
     }
 
-    getCollider(){
-        return this.collider;
+    getBBox(){
+        return this.bbox;
     }
 
     createTuerca(){
@@ -49,13 +55,6 @@ class Tuerca extends THREE.Object3D {
         return cuerpoTuerca;
     }
 
-    createCollider(){
-        var geom = new THREE.BoxGeometry(this.rt*1.5, this.rt*1.5, this.rt*1.5);
-        var material = new THREE.MeshToonMaterial({color: 0xAA4342});
-        var collider = new THREE.Mesh(geom, material);
-        return collider;
-    }
-
     upDown(){
         var origen = {x: 0, y: -5};
         var destino = {x: 0, y: 5};
@@ -66,22 +65,19 @@ class Tuerca extends THREE.Object3D {
                 this.tuerca.position.x = origen.x;
                 this.tuerca.position.y = origen.y;
             })
-            .onComplete(() => {
-                //origen.y = -10;
-            })
             .repeat(Infinity)
             .yoyo(true);
         
         movimiento.start();
-        //TWEEN.update();
-        //TWEEN.add(movimiento);
+
     }
 
     update(dt){ //dt=delta time
-        //var dt = this.reloj.getDelta();
         this.tuerca.rotation.x += this.velocidad*dt;
         this.tuerca.rotation.y += this.velocidad*dt;
         this.tuerca.rotation.z += this.velocidad*dt;
+
+        this.bbox.copy(this.tuerca.geometry.boundingBox).applyMatrix4(this.tuerca.matrixWorld);
 
         TWEEN.update();
     }

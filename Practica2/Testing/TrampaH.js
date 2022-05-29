@@ -9,6 +9,10 @@ class TrampaH extends THREE.Object3D {
         this.trampaH = new Tronco();
         this.trampaH.rotation.z = Math.PI/2;
         this.trampaH.position.x = -6;
+        this.trampaH.traverseVisible((nodo) => {
+            nodo.castShadow = true;
+            nodo.receiveShadow = true;
+        });
 
         //Animacion de la trampa horizontal
         this.inOut();

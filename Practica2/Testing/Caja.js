@@ -27,6 +27,7 @@ class Caja extends THREE.Object3D {
         ];
 
         var caja = new THREE.Mesh(geom, materials);
+        caja.castShadow = true;
         return caja;
     }
 

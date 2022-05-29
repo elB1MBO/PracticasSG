@@ -1,6 +1,5 @@
 import * as THREE from '../libs/three.module.js'
 import {CSG} from '../libs/CSG-v2.js'
-import * as TWEEN from '../libs/tween.esm.js'
 
 class Tronco extends THREE.Object3D {
     constructor(){
@@ -18,34 +17,33 @@ class Tronco extends THREE.Object3D {
         this.numFilas = 3;
         this.pinchosPorFila = 4;
 
+        //BOUNDING BOX
+        this.boxTronco = new THREE.Box3();
+
         this.tronco = this.createTronco();
 
         this.pinchos = this.createPinchos();
         this.tronco.add(this.pinchos);
+        this.tronco.geometry.computeBoundingBox();
+        this.boxTronco.copy(this.tronco.geometry.boundingBox).applyMatrix4(this.tronco.matrixWorld);
 
-        this.colliderTronco = this.createColliderTronco();
-        this.tronco.add(this.colliderTronco);
 
         this.apoyos = this.createApoyos();
-
-        this.collidersApoyos = this.createCollidersApoyos();
-        this.apoyos.add(this.collidersApoyos);
-
+        /* this.boxApoyos = new THREE.Box3();
+        this.apoyos.geometry.computeBoundingBox(); */
         this.troncoConApoyos = new THREE.Mesh();
         this.troncoConApoyos.add(this.tronco);
         this.troncoConApoyos.add(this.apoyos);
+
         this.add(this.troncoConApoyos);
     }
 
-    setWorldPosition(x, y, z){
-        this.colliderTronco.position.x = x;
+    getBBox(){
+        return this.boxTronco;
     }
 
-    getColliderTronco(){
-        return this.colliderTronco;
-    }
-    getCollidersApoyo(){
-        return this.collidersApoyos;
+    getTronco(){
+        return this.tronco;
     }
 
     createTronco(){
@@ -85,6 +83,7 @@ class Tronco extends THREE.Object3D {
         }
         
         var pinchos = csg.toMesh();
+
         pinchos.position.z = -this.largoTronco/this.numFilas;
         return pinchos;
     }
@@ -107,33 +106,9 @@ class Tronco extends THREE.Object3D {
         return apoyos;
     }
 
-    createColliderTronco(){
-        var geom = new THREE.CylinderGeometry(this.radioTronco*1.4, this.radioTronco*1.4, this.largoTronco, 30, 30);
-        var material = new THREE.MeshNormalMaterial();
-        var collider = new THREE.Mesh(geom, material);
-        collider.rotation.x = Math.PI/2;
-        return collider;
-    }
-
-    createCollidersApoyos(){
-        var geom = new THREE.BoxGeometry(this.ta*2, this.largoApoyo, this.ta);
-        var material = new THREE.MeshNormalMaterial();
-        var colliderApoyo1 = new THREE.Mesh(geom, material);
-        var colliderApoyo2 = new THREE.Mesh(geom, material);
-        colliderApoyo1.position.x = this.largoTronco/2 + this.ta/4;
-        colliderApoyo2.position.x = -this.largoTronco/2 - this.ta/4;
-
-        var csg = new CSG();
-        csg.union([colliderApoyo1, colliderApoyo2]);
-        var collApoyos = csg.toMesh();
-        /* collApoyos.rotation.y = Math.PI/2;
-        collApoyos.position.y = this.largoApoyo/2; */
-
-        return collApoyos;
-    }
-
     update(dt){
         this.tronco.rotation.z -= this.velocidadGiro*dt;
+        this.boxTronco.copy(this.tronco.geometry.boundingBox).applyMatrix4(this.tronco.matrixWorld);
     }
 }
 

@@ -10,24 +10,28 @@ class TrampaPinchos extends THREE.Object3D {
         this.velocidad = 0.75;
 
         this.alturaBase = 0.3;
-        //this.ladoBase = 5;
         this.ladoBase = ladoBase;
 
         this.trampa = this.createBase();
         this.pinchosP = this.createPinchos();
-        this.collider = this.createCollider();
-        this.pinchosP.add(this.collider);
+
         
-        /* this.agujeros = this.createAgujeros();
-        this.trampa.add(this.agujeros);*/
+        //BOUNDING BOX
+        this.bbox = new THREE.Box3();
 
         this.trampa.add(this.pinchosP);
+
+        this.trampa.traverseVisible((nodo) => {
+            nodo.castShadow = true;
+            nodo.receiveShadow = true;
+        });
+
         this.upDown();
         this.add(this.trampa);
     }
 
-    getCollider(){
-        return this.collider;
+    getBBox(){
+        return this.bbox;
     }
 
     createBase(){
@@ -63,40 +67,13 @@ class TrampaPinchos extends THREE.Object3D {
         }
         csg.subtract([pinchoOriginal]);
         var trampa = csg.toMesh();
+
+        //Calculamos la bounding box de los pinchos
+        trampa.geometry.computeBoundingBox();
+
         trampa.position.x = -this.ladoBase/2;
         trampa.position.z = -this.ladoBase/2;
         return trampa;
-    }
-    
-    createAgujeros(){
-        var geom = new THREE.CylinderGeometry(0.5, 0.5, 0.01, 30, 30);
-        var material = new THREE.MeshBasicMaterial({color:0x111111});
-        geom.translate(0, this.alturaBase/2, 0);
-        var agujeroOriginal = new THREE.Mesh(geom, material);
-        var csg = new CSG();
-        for(let i = 1; i < this.ladoBase; i++){       //Fila
-            for(let j = 1; j < this.ladoBase; j++){   //Columna
-                var agujeroj = new THREE.Mesh(geom, material);
-                agujeroj.position.z = i;
-                agujeroj.position.x = j;
-                csg.union([agujeroOriginal, agujeroj]);
-            }
-        }
-        csg.subtract([agujeroOriginal]);
-        var agujeros = csg.toMesh();
-        agujeros.position.x = -this.ladoBase/2;
-        agujeros.position.z = -this.ladoBase/2;
-        return agujeros;
-    }
-
-    createCollider(){
-        var geom = new THREE.BoxGeometry(this.ladoBase, 0.2, this.ladoBase);
-        var material = new THREE.MeshNormalMaterial();
-        var collider = new THREE.Mesh(geom, material);
-        collider.position.x = this.ladoBase/2;
-        collider.position.y = this.alturaBase;
-        collider.position.z = this.ladoBase/2;
-        return collider;
     }
 
     //Animacion de subir y bajar
@@ -110,26 +87,14 @@ class TrampaPinchos extends THREE.Object3D {
                 this.pinchosP.position.x = origen.x;
                 this.pinchosP.position.y = origen.y;
             })
-            .onComplete(() => {
-                //origen.y = -10;
-            })
             .repeat(Infinity)
             .yoyo(true);
         
         movimiento.start();
-        //TWEEN.update();
-        //TWEEN.add(movimiento);
     }
 
     update(dt){
-        //var dt = this.reloj.getDelta(); //Segundos desde la ultima llamada
-        /* this.tornillo.rotation.x += this.velocidad * dt;
-        this.tornillo.rotation.x += this.velocidad * dt;
-        this.tornillo.rotation.z += this.velocidad * dt;
-        */
-        //this.pinchosP.rotation.y += 0.1;
-
-        //this.upDown(this.velocidad*dt);
+        this.bbox.copy(this.pinchosP.geometry.boundingBox).applyMatrix4(this.pinchosP.matrixWorld);
         TWEEN.update();
     }
 

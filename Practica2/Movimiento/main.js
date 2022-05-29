@@ -20,6 +20,8 @@ class main extends THREE.Object3D {
         this.currentAction = "Idle"; //Animación actual
 
         this.bimbot = new Bimbot();
+        this.boxHelper = new THREE.Box3Helper(this.bimbot.getBBox(), 0xffff00);
+        this.add(this.boxHelper);
 
         this.animationsMap = this.bimbot.animations; //Mapa de las animaciones del bimbot
 
@@ -56,25 +58,6 @@ class main extends THREE.Object3D {
         this.coleccionables = this.objetos.getColeccionables();
         this.trampas = this.objetos.getTrampas();
 
-        /* console.log("COLLIDERS: "+this.objetos.getColliders());
-        
-        for (let i = 0; i < this.objetos.getColliders().length; i++) {
-            var element = this.objetos.getColliders()[i];
-            console.log("Collider "+i+": "+element);
-            console.log("Posicion collider: "+element[0].matrixWorld);
-            var v1 = new THREE.Vector3();
-            v1.setFromMatrixPosition(element[0].matrixWorld);
-            console.log(v1);
-            element[0].geometry.computeBoundingBox();
-            v1 = element[0].geometry.boundingBox;
-            console.log(v1);
-        } */
-
-        /* this.cajaColision1 = this.createBoxCollider();
-        this.cajaColision1.position.z = 20;
-        //this.colliders.add(this.cajaColision1);
-        this.add(this.cajaColision1); */
-
         //Cuando el robot llegue a esta caja, saldrá un mensaje de que tiene que volver al comienzo, pero la velocidad de las trampas habrá aumentado
         //Los coleccionables respawnarán -> en sitios aleatorios dentro del entorno?
         this.cajaFinal = this.createBoxCollider();
@@ -88,15 +71,9 @@ class main extends THREE.Object3D {
         this.limiteX = 8;
         this.limiteXN = -8;
 
-        //window.requestAnimationFrame(this.render);
-
         //para que la escena sepa cuándo tiene que actualizar la cámara
         this.gameResumed = false;
 
-    }
-
-    setPosicionCaja() {
-        this.bimbot.collider.getWorldPosition(this.bimbot.cajaMundo);
     }
 
     // ******* ******* ******* COLLIDERS ******* ******* *******
@@ -117,22 +94,21 @@ class main extends THREE.Object3D {
     }
 
     checkCollisions(objeto) {
-        if (this.intersectBoxes(this.bimbot, objeto)) {
+        if(objeto.getBBox().intersectsBox(this.bimbot.getBBox())){
             console.log("Bimbot ha colisionado, pierde una vida y vuelve al inicio.");
             this.bimbot.position.x = 0;
             this.bimbot.position.z = 0;
-            this.bimbot.setVidas(this.bimbot.getVidas() - 1);
+            this.hit(); //pierde una vida
         }
     }
-
     checkCollisionsCaja(objeto) {
-        if (this.intersectBoxes(this.bimbot, objeto)) {
+        if (objeto.getBBox().intersectsBox(this.bimbot.getBBox())) {
             console.log("Choca con una caja");
         }
     }
 
     checkCollisionsColeccionables(objeto) {
-        if (this.intersectBoxes(this.bimbot, objeto)) {
+        if (objeto.getBBox().intersectsBox(this.bimbot.getBBox())) {
             console.log("Bimbot ha encontrado un coleccionable, lo recoge.");
             this.objetos.remove(objeto);
             this.recogeColeccionable();
@@ -140,18 +116,6 @@ class main extends THREE.Object3D {
         }
         return false;
     }
-
-    // ******* ******* ******* RAYCAST ******* ******* *******
-
-    /* render() {
-      var raycaster = this.bimbot.getRaycaster();
-  
-      var intersects = raycaster.intersectObject(this.cajaColision1);
-  
-      intersects.material.color.set(0x981F18);
-  
-      renderer.render(this, this.getCamera());
-    } */
 
     // ******* ******* ******* VIDA ******* ******* *******
 
@@ -165,6 +129,10 @@ class main extends THREE.Object3D {
 
     getCamera() {
         return this.camara;
+    }
+    
+    hit(){ //Funcion que se llama cuando el bimbot recibe daño
+        this.bimbot.setVidas(this.bimbot.getVidas()-1);
     }
 
     vidas(event) {
@@ -208,6 +176,7 @@ class main extends THREE.Object3D {
             screen.style.display = "inline";
             //Elimina al bimbot de la escena, ya que ha muerto
             this.remove(this.bimbot);
+            this.remove(this.boxHelper);
         }
     }
     //Cuando pulsen el boton de Resume, se volverá a crear al bimbot y se quitará la pantalla de game over
@@ -217,6 +186,13 @@ class main extends THREE.Object3D {
             this.bimbot = new Bimbot();
             this.add(this.bimbot);
             this.gameResumed = true;
+            this.boxHelper = new THREE.Box3Helper(this.bimbot.getBBox(), 0xffff00);
+            this.add(this.boxHelper);
+            //Resetea los coleccionables borrando lo restantes y creandolos todos de nuevo
+            for (var i = 0; i < this.coleccionables.length; i++) {
+                this.objetos.remove(this.coleccionables[i]);
+            }
+            this.objetos.createCollectables();
         }
     }
 
@@ -346,18 +322,10 @@ class main extends THREE.Object3D {
         var dt = this.clock.getDelta();
         if (this.mixer) this.mixer.update(dt);
 
-        this.bimbot.update();
-        this.objetos.update();
-
-        //this.render();
-        var vector = new THREE.Vector3(this.bimbot.position.x, this.bimbot.position.y, this.bimbot.position.z);
-        this.bimbot.cajaMundo = vector;
-
-        this.setPosicionCaja();
+        this.bimbot.update(dt);
+        this.objetos.update(dt);
 
         this.setInfoColeccionables();
-
-        //COLISIONES
 
         //Cajas
         for (var i = 0; i < this.cajas.length; i++) {

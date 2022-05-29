@@ -25,6 +25,11 @@ class Tuerca extends THREE.Object3D {
 
         this.tuerca.geometry.computeBoundingBox();
 
+        this.tuerca.traverseVisible((nodo) => {
+            nodo.castShadow = true;
+            nodo.receiveShadow = true;
+        });
+
         this.upDown();
         this.add(this.tuerca);
     }

@@ -1,6 +1,5 @@
 import * as THREE from '../libs/three.module.js'
 import {CSG} from '../libs/CSG-v2.js'
-import * as TWEEN from '../libs/tween.esm.js'
 
 class Tronco extends THREE.Object3D {
     constructor(){
@@ -59,6 +58,7 @@ class Tronco extends THREE.Object3D {
         geomCil.rotateX(Math.PI/2);
        
         var tronco = new THREE.Mesh(geomCil, materialCilindro);
+        tronco.castShadow = true;
 
         return tronco;
     }
@@ -89,8 +89,9 @@ class Tronco extends THREE.Object3D {
         var pinchos = csg.toMesh();
 
         //pinchos.geometry.computeBoundingBox();
-
         pinchos.position.z = -this.largoTronco/this.numFilas;
+        pinchos.castShadow = true;
+
         return pinchos;
     }
 
@@ -104,11 +105,18 @@ class Tronco extends THREE.Object3D {
         apoyo1.position.x = this.largoTronco/2 + this.ta/4;
         apoyo2.position.x = -this.largoTronco/2 - this.ta/4;
         
+        /* apoyo1.castShadow = true;
+        apoyo1.receiveShadow = true;
+        apoyo2.castShadow = true;
+        apoyo2.receiveShadow = true; */
+
         var csg = new CSG();
         csg.union([apoyo1, apoyo2]);
         var apoyos = csg.toMesh();
         apoyos.rotation.y = Math.PI/2;
         apoyos.position.y = this.largoApoyo/2;
+
+        
         return apoyos;
     }
 

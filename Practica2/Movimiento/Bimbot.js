@@ -1,12 +1,6 @@
 import * as THREE from '../libs/three.module.js'
 import { GLTFLoader } from '../libs/GLTFLoader.js'
 import * as TWEEN from '../libs/tween.esm.js'
-import { Tornillo } from '../MisModelos/Tornillo.js'
-import { Tuerca } from '../MisModelos/Tuerca.js'
-import { Tronco } from '../MisModelos/Tronco.js'
-import { TrampaPinchos } from '../MisModelos/TrampaPinchos.js'
-import { Caja } from '../MisModelos/Caja.js'
-
  
 class Bimbot extends THREE.Object3D {
   constructor() {
@@ -28,26 +22,22 @@ class Bimbot extends THREE.Object3D {
     }, undefined, ( e ) => { console.error( e ); }
     );
 
-    //Establecemos los colliders del bimbot
-    this.collider = this.setCollider(); 
-    //Vector con las coordenadas del mundo de la caja collider
-    this.cajaMundo = new THREE.Vector3();
-    this.add(this.collider);
+    this.bbox = new THREE.Box3();
+    //Para hacer la caja de colision del bot, he creado una caja con un tamaño adecuado
+    this.caja = this.createBB();
+    this.add(this.caja);
+    
 
     //El bimbot tendra X vidas:
     this.vidas = 3;
     //Y empieza con 0 coleccionables:
-    this.coleccionables = 2;
+    this.coleccionables = 0;
     //Creamos la camara y la añadimos a this
     this.camara = this.createCamera();
     this.add(this.camara);
   }
 
   // ******* ******* ******* GETTERS Y SETTERS ******* ******* *******
-
-  getRaycaster(){
-    return this.raycaster;
-  }
 
   getModelo(){
     return this.model;
@@ -67,10 +57,21 @@ class Bimbot extends THREE.Object3D {
     this.coleccionables = x;
   }
 
-  getCollider(){
-    return this.collider;
+  // ******* ******* ******* BOUNDING BOX ******* ******* *******
+
+  getBBox(){
+    return this.bbox;
   }
-  
+
+  createBB(){
+    var geom = new THREE.BoxGeometry(1.75, 4, 1.75);
+    var material = new THREE.MeshNormalMaterial({visible:false});
+    var caja = new THREE.Mesh(geom, material);
+    caja.position.y = 2;
+    caja.geometry.computeBoundingBox();
+    return caja;
+  }
+
   // ******* ******* ******* ******* ******* ******* ******* 
   
   createActions (model, animations) {
@@ -159,40 +160,17 @@ class Bimbot extends THREE.Object3D {
   getCamera(){
     return this.camara;
   }
-  
-  // ******* ******* ******* COLISIONES ******* ******* ******* 
 
-  setCollider(){
-    var boxBB = this.createBB();
-    return boxBB;
-  }
-
-
-  //Crea la Bounding Box
-  createBB(){
-    /* //Hay que declarar los vectores min y max del Box3
-    var min = new THREE.Vector3(2, 2, 2);
-    var max = new THREE.Vector3(3, 3, 3);
-    //Así tenemos una caja de 1x1x1
-    var box = new THREE.Box3(min, max);
-    return box; */
-
-    var geom = new THREE.BoxGeometry(2, 4, 2);
-    var material = new THREE.MeshNormalMaterial({visible:false});
-    var boxBB = new THREE.Mesh(geom, material);
-    boxBB.position.y = 2;
-    return boxBB;
-  }
 
   // ******* ******* ******* ******* ******* ******* ******* 
 
-  update () {
+  update (dt) {
     // Hay que pedirle al mixer que actualice las animaciones que controla
-    var dt = this.clock.getDelta();
+    //var dt = this.clock.getDelta();
     if (this.mixer) this.mixer.update (dt);
 
-    //El collider debe actualizar su posicion en el mundo, para poder saber si ha colisionado con otra caja o no
-
+    //Actualizar la bounding box a la posicion del bimbot (de su caja de colision)
+    this.bbox.copy(this.caja.geometry.boundingBox).applyMatrix4(this.caja.matrixWorld);
     TWEEN.update(dt);
   }
 }
