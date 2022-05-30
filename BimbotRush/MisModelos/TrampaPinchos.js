@@ -6,7 +6,6 @@ class TrampaPinchos extends THREE.Object3D {
     constructor(ladoBase) {
         super();
 
-        this.reloj = new THREE.Clock();
         this.velocidad = 0.75;
 
         this.alturaBase = 0.3;

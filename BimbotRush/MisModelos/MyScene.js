@@ -7,10 +7,8 @@ import { TrackballControls } from '../libs/TrackballControls.js'
 
 // Clases de mi proyecto
 
-import { Tornillo } from './Tornillo.js';
-import { Tuerca } from './Tuerca.js';
 import { Bimbot } from './Bimbot.js';
-import {TrampaPinchos} from './TrampaPinchos.js';
+
 
 /// La clase fachada del modelo
 /**

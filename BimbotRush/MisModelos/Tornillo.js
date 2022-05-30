@@ -1,14 +1,11 @@
 import * as THREE from '../libs/three.module.js'
 import {CSG} from '../libs/CSG-v2.js'
-import {CilindroBarrido} from './CilindroBarrido.js'
 import * as TWEEN from '../libs/tween.esm.js'
 
 class Tornillo extends THREE.Object3D {
     constructor(){
         super();
-        //Creamos y referenciamos un reloj para la animacion
-        this.reloj = new THREE.Clock();
-
+        
         //Atributo velocidad:
         this.velocidad = 0.75;
         //Radio de la cabeza del tornillo
@@ -16,7 +13,7 @@ class Tornillo extends THREE.Object3D {
 
         this.bbox = new THREE.Box3();
 
-        var cuerpo = new CilindroBarrido();
+        var cuerpo = this.createCilindro();
         cuerpo.position.y = -2.5;
         var cabeza = this.createCabeza();
 
@@ -59,6 +56,19 @@ class Tornillo extends THREE.Object3D {
         var cabeza = csg.toMesh();
 
         return cabeza;
+    }
+
+    createCilindro(){
+        var rc = 1.5;
+        var hc = 5;
+        
+        var textura = new THREE.TextureLoader().load('../imgs/textura-dorada-metalica.jpg');
+        var material = new THREE.MeshPhongMaterial({map: textura});
+        var geomCil = new THREE.CylinderGeometry(rc, rc, hc, 24);
+        
+        var cilindro = new THREE.Mesh(geomCil, material);
+
+        return cilindro;
     }
 
     createCruz(){

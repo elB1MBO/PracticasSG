@@ -1,23 +1,20 @@
 import * as THREE from '../libs/three.module.js'
 import {CSG} from '../libs/CSG-v2.js'
-import {CilindroBarrido} from './CilindroBarrido.js'
 import * as TWEEN from '../libs/tween.esm.js'
 
 class Tuerca extends THREE.Object3D {
     constructor(){
         super();
-        //Creamos y referenciamos un reloj para la animacion
-        this.reloj = new THREE.Clock();
 
         //Atributo velocidad:
         this.velocidad = 0.75;
-
-        this.rt = 4;
+        //radio tuerca
+        this.radioTuerca = 4;
 
         this.bbox = new THREE.Box3();
 
         var cuerpo = this.createTuerca();
-        var hueco = new CilindroBarrido();
+        var hueco = this.createCilindro();
 
         var csg = new CSG();
         csg.subtract([cuerpo, hueco]);
@@ -42,10 +39,10 @@ class Tuerca extends THREE.Object3D {
         var textura = new THREE.TextureLoader().load('../imgs/textura-dorada-metalica.jpg');
         var material = new THREE.MeshPhongMaterial({map: textura});
         
-        var geomTuerca = new THREE.CylinderGeometry(this.rt, this.rt, this.rt, 6);
+        var geomTuerca = new THREE.CylinderGeometry(this.radioTuerca, this.radioTuerca, this.radioTuerca, 6);
         var cil = new THREE.Mesh(geomTuerca, material);
 
-        var geomEsfera = new THREE.SphereGeometry(this.rt);
+        var geomEsfera = new THREE.SphereGeometry(this.radioTuerca);
         var esfera = new THREE.Mesh(geomEsfera, material);
 
         var csg = new CSG();
@@ -53,6 +50,19 @@ class Tuerca extends THREE.Object3D {
 
         var cuerpoTuerca = csg.toMesh();
         return cuerpoTuerca;
+    }
+
+    createCilindro(){
+        var rc = 1.5;
+        var hc = 5;
+        
+        var textura = new THREE.TextureLoader().load('../imgs/textura-dorada-metalica.jpg');
+        var material = new THREE.MeshPhongMaterial({map: textura});
+        var geomCil = new THREE.CylinderGeometry(rc, rc, hc, 24);
+        
+        var cilindro = new THREE.Mesh(geomCil, material);
+
+        return cilindro;
     }
 
     upDown(){

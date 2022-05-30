@@ -218,7 +218,7 @@ class Objetos extends THREE.Object3D{
       tuerca.scale.x = 0.4;
       tuerca.scale.y = 0.4;
       tuerca.scale.z = 0.4;
-      tuerca.position.y = 4;
+      tuerca.position.y = 3.6;
       tuerca.position.z = 160;
       boxHelper = new THREE.Box3Helper(tuerca.getBBox(), 0x40A0E4);
       this.boxHelpers.push(boxHelper);
