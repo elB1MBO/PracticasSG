@@ -10,6 +10,13 @@ class main extends THREE.Object3D {
 
         this.clock = new THREE.Clock();
 
+        this.velocidad = 0.2;
+
+        this.limiteZ = 170;
+        this.limiteZN = -15;
+        this.limiteX = 8;
+        this.limiteXN = -8;
+
         //Variables para las animaciones:
         //Para ello, tengo un vector con los movimientos:
         //W A S D SPACE
@@ -106,8 +113,9 @@ class main extends THREE.Object3D {
                     this.bimbot.getModelo().rotation.y = -Math.PI / 4;
                 } else {
                     this.bimbot.getModelo().rotation.y = Math.PI * 2;
+                    //this.startAnimation = false;
+                    console.log("Presionando W "+this.startAnimation);
                 }
-
                 break;
             case KeyCode.KEY_A:
                 this.movimientos[1] = true;
@@ -156,22 +164,22 @@ class main extends THREE.Object3D {
             case KeyCode.KEY_W:
                 //Cambia el estado de la variable corriendo a false
                 this.movimientos[0] = false;
-                this.idle = true;
+                this.currentAction = "Idle";
                 this.startAnimation = true;
                 break;
             case KeyCode.KEY_A:
                 this.movimientos[1] = false;
-                this.idle = true;
+                this.currentAction = "Idle";
                 this.startAnimation = true;
                 break;
             case KeyCode.KEY_S:
                 this.movimientos[2] = false;
-                this.idle = true;
+                this.currentAction = "Idle";
                 this.startAnimation = true;
                 break;
             case KeyCode.KEY_D:
                 this.movimientos[3] = false;
-                this.idle = true;
+                this.currentAction = "Idle";
                 this.startAnimation = true;
                 break;
         }
@@ -181,12 +189,12 @@ class main extends THREE.Object3D {
     onKeyPressed(event) {
         var x = event.which || event.key;
         switch (x) {
-            case KeyCode.KEY_SPACE:
+            /* case KeyCode.KEY_SPACE:
                 this.bimbot.fadeToAction('Jump', false, 1);
                 break;
             case KeyCode.KEY_Q:
                 this.bimbot.fadeToAction("Wave", false, 0.6);
-                break;
+                break; */
         }
     }
 
@@ -219,11 +227,19 @@ class main extends THREE.Object3D {
             }
         }
 
+
+
+        //console.log(this.movimientos);
+        
+
         if (this.movimientos[0] === true) {
             if (this.bimbot.position.z < this.limiteZ) {
                 this.bimbot.position.z += this.velocidad;
             }
+            //Comprueba si tiene que empezar la animacion
             if (this.startAnimation && this.currentAction != "Running") {
+                console.log("ENTRA EN EL IF" + this.startAnimation + " " + this.currentAction);
+                this.currentAction = "Running";
                 this.bimbot.fadeToAction("Running", true, 1);
                 this.startAnimation = false;
             }
@@ -234,6 +250,8 @@ class main extends THREE.Object3D {
                 this.bimbot.position.x += this.velocidad;
             }
             if (this.startAnimation && this.currentAction != "Running") {
+                console.log("ENTRA EN EL IF" + this.startAnimation + " " + this.currentAction);
+                this.currentAction = "Running";
                 this.bimbot.fadeToAction("Running", true, 1);
                 this.startAnimation = false;
             }
@@ -244,6 +262,8 @@ class main extends THREE.Object3D {
                 this.bimbot.position.z -= this.velocidad;
             }
             if (this.startAnimation && this.currentAction != "Running") {
+                console.log("ENTRA EN EL IF" + this.startAnimation + " " + this.currentAction);
+                this.currentAction = "Running";
                 this.bimbot.fadeToAction("Running", true, 1);
                 this.startAnimation = false;
             }
@@ -254,18 +274,20 @@ class main extends THREE.Object3D {
                 this.bimbot.position.x -= this.velocidad;
             }
             if (this.startAnimation && this.currentAction != "Running") {
+                console.log("ENTRA EN EL IF" + this.startAnimation + " " + this.currentAction);
+                this.currentAction = "Running";
                 this.bimbot.fadeToAction("Running", true, 1);
                 this.startAnimation = false;
             }
         }
 
         //Boton izqdo raton
-        if (this.movimientos[4] === true) {
+        /* if (this.movimientos[4] === true) {
             if (this.startAnimation && this.currentAction != "Running") {
                 this.bimbot.fadeToAction("Punch", false, 1);
                 this.startAnimation = false;
             }
-        }
+        } */
     }
 
 }

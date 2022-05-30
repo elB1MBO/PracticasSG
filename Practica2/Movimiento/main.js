@@ -34,7 +34,7 @@ class main extends THREE.Object3D {
         this.add(this.botBoxHelper);
 
         this.animationsMap = this.bimbot.animations; //Mapa de las animaciones del bimbot
-        this.bimbot.position.z = 150;
+        //this.bimbot.position.z = 150;
         this.add(this.bimbot);
 
         for (var i = 0; i < this.bimbot.animations.length; i++) {
@@ -300,8 +300,9 @@ class main extends THREE.Object3D {
                     this.bimbot.getModelo().rotation.y = -Math.PI / 4;
                 } else {
                     this.bimbot.getModelo().rotation.y = Math.PI * 2;
+                    //this.startAnimation = false;
+                    console.log("Presionando W "+this.startAnimation);
                 }
-
                 break;
             case KeyCode.KEY_A:
                 this.movimientos[1] = true;
@@ -350,22 +351,22 @@ class main extends THREE.Object3D {
             case KeyCode.KEY_W:
                 //Cambia el estado de la variable corriendo a false
                 this.movimientos[0] = false;
-                this.idle = true;
+                this.currentAction = "Idle";
                 this.startAnimation = true;
                 break;
             case KeyCode.KEY_A:
                 this.movimientos[1] = false;
-                this.idle = true;
+                this.currentAction = "Idle";
                 this.startAnimation = true;
                 break;
             case KeyCode.KEY_S:
                 this.movimientos[2] = false;
-                this.idle = true;
+                this.currentAction = "Idle";
                 this.startAnimation = true;
                 break;
             case KeyCode.KEY_D:
                 this.movimientos[3] = false;
-                this.idle = true;
+                this.currentAction = "Idle";
                 this.startAnimation = true;
                 break;
         }
@@ -375,12 +376,12 @@ class main extends THREE.Object3D {
     onKeyPressed(event) {
         var x = event.which || event.key;
         switch (x) {
-            case KeyCode.KEY_SPACE:
+            /* case KeyCode.KEY_SPACE:
                 this.bimbot.fadeToAction('Jump', false, 1);
                 break;
             case KeyCode.KEY_Q:
                 this.bimbot.fadeToAction("Wave", false, 0.6);
-                break;
+                break; */
         }
     }
 
@@ -420,20 +421,16 @@ class main extends THREE.Object3D {
         //Funcion que comprueba si ha llegado a 0 vidas
         this.gameOver();
 
-        /* if(this.idle==true){
-            this.bimbot.fadeToAction('Idle', true, 1);
-        } */
-
-        //console.log("Estado: " + this.movimientos);
-        //Hacia delante
-
+        
         //En el movimiento, defino unos límites para que no se salga del mapa
-
+        //Hacia delante
         if (this.movimientos[0] === true) {
             if (this.bimbot.position.z < this.limiteZ) {
                 this.bimbot.position.z += this.velocidad;
             }
+            //Comprueba si tiene que empezar la animacion
             if (this.startAnimation && this.currentAction != "Running") {
+                this.currentAction = "Running";
                 this.bimbot.fadeToAction("Running", true, 1);
                 this.startAnimation = false;
             }
@@ -444,6 +441,7 @@ class main extends THREE.Object3D {
                 this.bimbot.position.x += this.velocidad;
             }
             if (this.startAnimation && this.currentAction != "Running") {
+                this.currentAction = "Running";
                 this.bimbot.fadeToAction("Running", true, 1);
                 this.startAnimation = false;
             }
@@ -454,6 +452,7 @@ class main extends THREE.Object3D {
                 this.bimbot.position.z -= this.velocidad;
             }
             if (this.startAnimation && this.currentAction != "Running") {
+                this.currentAction = "Running";
                 this.bimbot.fadeToAction("Running", true, 1);
                 this.startAnimation = false;
             }
@@ -464,6 +463,7 @@ class main extends THREE.Object3D {
                 this.bimbot.position.x -= this.velocidad;
             }
             if (this.startAnimation && this.currentAction != "Running") {
+                this.currentAction = "Running";
                 this.bimbot.fadeToAction("Running", true, 1);
                 this.startAnimation = false;
             }
@@ -471,7 +471,8 @@ class main extends THREE.Object3D {
 
         //Boton izqdo raton
         if (this.movimientos[4] === true) {
-            if (this.startAnimation && this.currentAction != "Running") {
+            if (this.startAnimation && this.currentAction != "Punch") {
+                this.currentAction = "Punch";
                 this.bimbot.fadeToAction("Punch", false, 1);
                 this.startAnimation = false;
             }

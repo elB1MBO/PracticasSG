@@ -22,6 +22,11 @@ class Bimbot extends THREE.Object3D {
     }, undefined, ( e ) => { console.error( e ); }
     );
 
+    this.animationsMap = new Map();
+    this.animations.filter(function (a) { return a.name != 'Death'; }).forEach(function (a) {
+      this.animationsMap.set(a.name, mixer.clipAction(a));
+  });
+
     this.bbox = new THREE.Box3();
     //Para hacer la caja de colision del bot, he creado una caja con un tamaño adecuado
     this.caja = this.createBB();
@@ -30,6 +35,16 @@ class Bimbot extends THREE.Object3D {
     //Creamos la camara y la añadimos a this
     this.camara = this.createCamera();
     this.add(this.camara);
+  }
+
+  getAnimations(){
+    return this.animations;
+  }
+  getMixer(){
+    return this.mixer;
+  }
+  getAnimationsMap(){
+    return this.animationsMap;
   }
 
   getModelo(){
