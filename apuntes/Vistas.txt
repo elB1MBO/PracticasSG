@@ -1,0 +1,52 @@
+La cámara es muy importante, ya que controlamos los ojos del observador
+Lo mas comodo en proyectos mas grandes es tener varias cámaras, como hacen en muchos juegos:
+tienen su cámara principal para el control del personaje, y luego cámaras secundarias que se activan para cinemáticas,
+por ejemplo.
+En la camara hay que tener en cuenta el plano general, no solo los elementos principales
+Tipos de cámara: paralela y perspectiva.
+Cámara mas usada: cámara en perspectiva, ya que el ser humano ve en perspectiva.
+
+Actualizar la ventana -> onWindowResize. Con esto se cambia la resolucion de tamaño de la ventana y la cámara
+
+Cámara subjetiva:
+    Cámara que sigue a un objetivo desde una tercera persona.
+
+Reloj devuelve el tiempo delta de la última consulta
+Hay que tener varios relojes, pq si no me van a devolver info falsa
+En cada cosa (update) que necesite un reloj, usar un reloj distinto
+
+Se pueden tener varias cámaras a la vez, como en el ejemplo del profe: pantalla dividida en 4, cada parte con su cámara
+
+
+LUCES
+
+Luz ambiental ambienta por igual toda la escena. Se usa para simular una luz indirecta, por ejemplo una luz amarillenta 
+de un atardecer, ya que permite añadir un color dominante.
+
+Luz puntual
+Desde una determinada posicion, ilumina en todas las direcciones.
+A esta luz se le puede decir cuánta distancia iluminar. Se puede añadir una funcion de decay, que hace que 
+la iluminación caiga conforme se acerca al límite de la misma.
+Esta caida puede ser lineal (algo al doble de distancia, recibe la mitad de luz)
+o cuadratica (algo al doble de distancia, recibe un cuarto de luz)
+La vida real es cuadrática, pero en nuestros ensayos nos puede ser mas util usar la lineal
+Esta luz tiene el atributo visible, que simplemente la apaga y enciende.
+
+Luz focal
+Desde su pos, ilumina en una dir y angulo, como un foco xd
+
+Sombras:
+Se pueden calcular por ray-tracing, calculando donde infieren las distintas luces en cada pixel, por lo que se calcula la
+iluminación de cada punto.
+
+Tambien se pueden calcular mediante Shadow Mapping: el funcionamiento es colocar una cámara donde está la luz, y de ahí se mira
+cómo se ven los objetos desde el punto de luz. De esta escena, se saca una textura, que es la que se aplica a la escena real. 
+De esta forma, obtenemos una escena donde las zonas a las que no llega la luz, son la "sombra" del resto de objetos.
+
+Sombras arrojadas
+
+Hemisphere light:
+luz parcial que nos permite dar un cierto tinte a cada zona de un objeto.
+
+Dibujado del disco del sol:
+Se puede simular el disco del sol mediante texturas, o añadir el efecto de reflejo de esa luz en la lente
