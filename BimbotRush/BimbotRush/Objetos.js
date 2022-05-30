@@ -7,6 +7,7 @@ import { TrampaPinchos } from '../MisModelos/TrampaPinchos.js'
 import { Caja } from '../MisModelos/Caja.js'
 import * as THREE from '../libs/three.module.js'
 
+//Todos los modelos que usa la clase Objetos están en la carpeta MisModelos
 
 class Objetos extends THREE.Object3D{
     constructor(){
@@ -34,6 +35,7 @@ class Objetos extends THREE.Object3D{
         
     }
 
+    //Funcion que cambia la visibilidad de los boxHelpers
     setBoxHelpers(value){
       for(var i=0; i<this.boxHelpers.length; i++){
         this.boxHelpers[i].visible = value;
@@ -56,6 +58,8 @@ class Objetos extends THREE.Object3D{
       //Pinchos:
       this.createTrampasPinchos();
     }
+    
+    //En cada trampa/coleccionable/caja que se cree, se añade el boxHelper al array
 
     createTrampasTroncos(){
       var boxHelper;
@@ -96,6 +100,7 @@ class Objetos extends THREE.Object3D{
       this.trampas.push(trampaV);
       this.add(trampaV);
     }
+
     createTrampasPinchos(){
       var boxHelper;
 
@@ -168,7 +173,7 @@ class Objetos extends THREE.Object3D{
 
     createCollectables() {
       var boxHelper;
-      console.log("Crea coleccionables");
+      //console.log("Crea coleccionables");
       
       var tornillo = this.importTornillo();
       tornillo.position.z = 10;
@@ -221,6 +226,7 @@ class Objetos extends THREE.Object3D{
       this.add(tuerca);
     }
 
+    //Para señalar la salida y final del nivel
     createMeta(){
       var geom = new THREE.BoxGeometry(20, 0.01, 5);
       var textura = new THREE.TextureLoader().load('../imgs/textura-ajedrezada.jpg');
@@ -234,7 +240,7 @@ class Objetos extends THREE.Object3D{
     }
 
     
-  // ******* ******* Importar y colocar objetos externos ******* ******* 
+  // ******* ******* Importar y ajustar objetos externos ******* ******* 
   //TORNILLO
   importTornillo(){
     var tornillo = new Tornillo();
@@ -259,8 +265,6 @@ class Objetos extends THREE.Object3D{
     tronco.scale.x = 0.6;
     tronco.scale.y = 0.6;
     tronco.scale.z = 0.6;
-    /* tronco.position.x = -3;
-    tronco.position.y = 1; */
     return tronco;
   }
   //TRAMPAS TRONCO

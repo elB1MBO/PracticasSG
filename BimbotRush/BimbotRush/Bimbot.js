@@ -21,13 +21,12 @@ class Bimbot extends THREE.Object3D {
       //that.createGUI (gui, str);
     }, undefined, ( e ) => { console.error( e ); }
     );
-
+    //Bounding box del robot
     this.bbox = new THREE.Box3();
     //Para hacer la caja de colision del bot, he creado una caja con un tamaño adecuado
     this.caja = this.createBB();
     this.add(this.caja);
     
-
     //El bimbot tendra X vidas:
     this.vidas = 3;
     //Y empieza con 0 coleccionables:

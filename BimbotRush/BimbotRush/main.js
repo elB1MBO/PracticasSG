@@ -28,25 +28,18 @@ class main extends THREE.Object3D {
         //Array de los box helpers
         this.boxHelpers = [];
 
+        //Nuestro robot
         this.bimbot = new Bimbot();
         //La caja del bot irá aparte, ya que se tiene que crear y destruir al reiniciar el juego cuando muere
         this.botBoxHelper = new THREE.Box3Helper(this.bimbot.getBBox(), 0xffff00);
         this.add(this.botBoxHelper);
-
-        this.animationsMap = this.bimbot.animations; //Mapa de las animaciones del bimbot
         //this.bimbot.position.z = 150;
         this.add(this.bimbot);
-
-        for (var i = 0; i < this.bimbot.animations.length; i++) {
-            var clip = this.bimbot.animations[i];
-            //console.log(clip.name);
-        }
 
         this.objetos = new Objetos();
         this.add(this.objetos);
 
         //Colisiones:
-
         this.cajas = this.objetos.getCajas();
         this.coleccionables = this.objetos.getColeccionables();
         this.trampas = this.objetos.getTrampas();
@@ -57,12 +50,11 @@ class main extends THREE.Object3D {
         
         this.colisionesCajas = [false, false];
         this.arrayCajas.push(this.colisionesCajas);
-        ////console.log(this.arrayCajas);
+        //console.log(this.arrayCajas);
 
-        //Cuando el robot llegue a esta caja, saldrá un mensaje de que tiene que volver al comienzo, pero la velocidad de las trampas habrá aumentado
+        //Cuando el robot llegue a esta caja, saldrá un mensaje de que tiene que volver al comienzo
         this.end = this.createEnd();
         this.endBox = new THREE.Box3();
-        //this.endBox.copy(this.end.geometry.boundingBox).applyMatrix4(this.end.matrixWorld);
         this.endHelper = new THREE.Box3Helper(this.endBox, 0xABCDEF);
         this.add(this.endHelper);
         this.add(this.end);
@@ -83,11 +75,8 @@ class main extends THREE.Object3D {
 
         window.addEventListener("keydown", (event) => this.vidas(event));
 
-        //this.bimbot.fadeToAction('Idle', true, 1);
-
         window.addEventListener("keydown", (event) => this.onKeyDown(event));
         window.addEventListener("keyup", (event) => this.onKeyUp(event));
-        /* window.addEventListener("keypress", (event) => this.onKeyPressed(event)); */
 
         //Escuche el click izquierdo para dar un puñetazo
         window.addEventListener("mousedown", (event) => this.onMouseDown(event));
@@ -96,13 +85,21 @@ class main extends THREE.Object3D {
         //Que escuche el boton de RESUME Y USAR
         document.getElementById("botonResume").addEventListener("mousedown", (event) => this.resume(event), true);
         document.getElementById("botonColecionables").addEventListener("mousedown", (event) => this.sumaVida(event), true);
-
-        window.addEventListener("keydown", (event) => this.keyColeccionable(event));
+        
+        /* window.addEventListener("keydown", (event) => this.keyColeccionable(event)); */
 
     }
 
-    // ******* ******* ******* GUI ******* ******* *******
+    getBimbot() {
+        return this.bimbot;
+    }
 
+    getCamera() {
+        return this.camara;
+    }
+
+    // ******* ******* ******* GUI ******* ******* *******
+    //Funcion para cambiar la visibilidad de los box helpers
     setBoxHelpers(value){
         this.botBoxHelper.visible = value;
         this.endHelper.visible = value;
@@ -153,7 +150,7 @@ class main extends THREE.Object3D {
             screen.style.display = "inline";
         }
     }
-
+    //Muestra el mensaje de victoria (un alert)
     victoria(){
         document.getElementById("check-msg").style.display = "none";
         alert("¡HAS GANADO!");
@@ -168,6 +165,8 @@ class main extends THREE.Object3D {
             new THREE.Vector2(b2.position.x, b2.position.z));
         return (vectorBetweenBoxes.length() < 2);
     }
+
+    //Hay 3 funciones que comprueban la colision, una por cada tipo de objeto, ya que hacen cosas diferentes
 
     checkCollisions(objeto) {
         if(objeto.getBBox().intersectsBox(this.bimbot.getBBox())){
@@ -200,17 +199,9 @@ class main extends THREE.Object3D {
 
 
     // ******* ******* ******* VIDA ******* ******* *******
-
+    //Crea el mensaje con las vidas del bot
     setMessage(str) {
         document.getElementById("Messages").innerHTML = "<h2>" + str + "</h2>";
-    }
-
-    getBimbot() {
-        return this.bimbot;
-    }
-
-    getCamera() {
-        return this.camara;
     }
     
     hit(){ //Funcion que se llama cuando el bimbot recibe daño
@@ -235,12 +226,13 @@ class main extends THREE.Object3D {
         this.bimbot.setColeccionables(this.bimbot.getColeccionables() + 1);
     }
 
+    /* Función que sirve para añadir coleccionables al robot con la tecla G
     keyColeccionable(event) {
         var x = event.which || event.key;
         if (x === KeyCode.KEY_G) {
             this.recogeColeccionable();
         }
-    }
+    } */
 
     setInfoColeccionables() {
         document.getElementById("div-colecs").innerHTML = "<p id='num-colecs'>x" + this.bimbot.getColeccionables() + "</p>"
@@ -263,10 +255,11 @@ class main extends THREE.Object3D {
             this.remove(this.botBoxHelper);
         }
     }
-    //Cuando pulsen el boton de Resume, se volverá a crear al bimbot y se quitará la pantalla de game over
+    //Cuando pulsen el boton de Resume, se recargará la página, dando inicio de nuevo al juego
     resume(event) {
         if (event.button === 0) {
-            /* document.getElementById("gameOverScreen").style.display = "none";
+            /* En un principio, en lugar de recargar la página, recolocaba ciertos objetos y volvia a crear los coleccionables
+            document.getElementById("gameOverScreen").style.display = "none";
             this.bimbot = new Bimbot();
             this.add(this.bimbot);
             this.gameResumed = true;
@@ -304,7 +297,7 @@ class main extends THREE.Object3D {
         var x = event.which || event.key;
         switch (x) {
             case KeyCode.KEY_W:
-                //Cambia el estado de la variable corriendo a true
+                //Cambia el estado de movimientos correspondiente a la W a true
                 this.movimientos[0] = true;
                 this.startAnimation = true;
                 if (this.movimientos[1] == true) { //Diagonal hacia delante-izqda
@@ -365,6 +358,7 @@ class main extends THREE.Object3D {
             case KeyCode.KEY_W:
                 //Cambia el estado de la variable corriendo a false
                 this.movimientos[0] = false;
+                //Cambia la accion actual a Idle
                 this.currentAction = "Idle";
                 this.startAnimation = true;
                 break;
@@ -397,6 +391,10 @@ class main extends THREE.Object3D {
         this.bimbot.update(dt);
         this.objetos.update(dt);
 
+        //Funcion que comprueba si ha llegado a 0 vidas
+        this.gameOver();
+
+        //Actualiza el mensaje contador de coleccionables
         this.setInfoColeccionables();
 
         //Comprobamos si ha llegado al final
@@ -420,9 +418,6 @@ class main extends THREE.Object3D {
 
         //Vamos actualizando el mensaje de las vidas del robot
         this.setMessage("Vidas: " + this.bimbot.getVidas());
-        //Funcion que comprueba si ha llegado a 0 vidas
-        this.gameOver();
-
         
         //En el movimiento, defino unos límites para que no se salga del mapa
         //Hacia delante

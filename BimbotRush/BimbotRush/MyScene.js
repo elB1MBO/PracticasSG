@@ -3,10 +3,8 @@
 
 import * as THREE from '../libs/three.module.js'
 import { GUI } from '../libs/dat.gui.module.js'
-import { TrackballControls } from '../libs/TrackballControls.js'
 
 // Clases de mi proyecto
-import { Bimbot } from './Bimbot.js';
 import {main} from './main.js';
 
 
@@ -67,6 +65,8 @@ class MyScene extends THREE.Scene {
     //this.add(limiteComienzo);
     this.add(limiteFinal);
 
+    /*Por tema de diseño, he optado por situar dos cubos con una textura Toon que simulen un fondo, 
+    ya que así consigo ocultar ciertas partes que considero sobrantes (los apoyos de las trampas al moverse)*/
     var geomLat = new THREE.BoxGeometry(1, 40, 250);
     var materialLat = new THREE.MeshToonMaterial({color:0x6060D2});
     var limiteIzq = new THREE.Mesh(geomLat, materialLat);
@@ -79,6 +79,7 @@ class MyScene extends THREE.Scene {
     this.add(limiteDcho);
   }
 
+  //La camara principal será la cámara que hemos instanciado en el bot
   createCamera () {
     this.camera = this.model.getBimbot().getCamera();
   }
@@ -89,8 +90,9 @@ class MyScene extends THREE.Scene {
     // La geometría es una caja con muy poca altura
     var geometryGround = new THREE.BoxGeometry (20,0.2,220);
     
-    // El material se hará con una textura de madera
+    // El material se hará con una textura de hierba
     var texture = new THREE.TextureLoader().load('../imgs/grass1.jpg');
+    //Hay que repetir la textura para ajustarla al tamaño de la geometria
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(2, 10);
@@ -103,7 +105,7 @@ class MyScene extends THREE.Scene {
     // El suelo lo bajamos la mitad de su altura para que el origen del mundo se quede en su lado superior
     ground.position.y = -0.1;
     ground.position.z = 70;
-    
+    //El suelo debe recibir sombras
     ground.receiveShadow = true;
 
     // Que no se nos olvide añadirlo a la escena, que en este caso es  this
@@ -136,21 +138,10 @@ class MyScene extends THREE.Scene {
   }
   
   createLights () {
-    /* // Se crea una luz ambiental, evita que se vean complentamente negras las zonas donde no incide de manera directa una fuente de luz
-    // La luz ambiental solo tiene un color y una intensidad
-    // Se declara como   var   y va a ser una variable local a este método
-    //    se hace así puesto que no va a ser accedida desde otros métodos
-    var ambientLight = new THREE.AmbientLight(0xccddee, 0.35);
-    // La añadimos a la escena
-    this.add (ambientLight); */
-    
-    // Se crea una luz focal que va a ser la luz principal de la escena
-    // La luz focal, además tiene una posición, y un punto de mira
-    // Si no se le da punto de mira, apuntará al (0,0,0) en coordenadas del mundo
-    // En este caso se declara como   this.atributo   para que sea un atributo accesible desde otros métodos.
+    //Luz principal, situada en el mismo eje x que el recorrido
     this.spotLight = new THREE.SpotLight( 0xDEC554, this.guiControls.lightIntensity);
     this.spotLight.position.set( 0, 200, 100 );
-    this.spotLight.castShadow = true;
+    this.spotLight.castShadow = true; //Para que lance sombras
 
     this.spotLight.shadow.mapSize.width = 512;
     this.spotLight.shadow.mapSize.height = 512;
@@ -162,6 +153,7 @@ class MyScene extends THREE.Scene {
 
     this.add (this.spotLight);
 
+    //Al final del recorrido, he añadido una spot light roja señalando la tuerca
     var endLight = new THREE.SpotLight(0xB70000, 1);
     endLight.position.set(0,5,160);
     var final = new THREE.Object3D();
@@ -170,11 +162,9 @@ class MyScene extends THREE.Scene {
     endLight.target = final;
     this.add(endLight);
 
-    /* var sun = new THREE.DirectionalLight(0xB39460);
-    this.add(sun); */
-
-    var skyGroundLight = new THREE.HemisphereLight(0x5E5E98, 0x5A845A);
-    this.add(skyGroundLight);
+    //En lugar de una luz ambiental, he usado una hemisphere para dar cierto color a la escena
+    var hemisphereLight = new THREE.HemisphereLight(0x5E5E98, 0x5A845A);
+    this.add(hemisphereLight);
   }
   
   createRenderer (myCanvas) {
@@ -182,7 +172,7 @@ class MyScene extends THREE.Scene {
     
     // Se instancia un Renderer   WebGL
     var renderer = new THREE.WebGLRenderer();
-
+    //Hay que decirle al renderer que queremos sombras
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
     
