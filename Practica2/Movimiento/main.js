@@ -10,6 +10,7 @@ class main extends THREE.Object3D {
 
         this.clock = new THREE.Clock();
 
+        //Velocidad de movimiento del robot
         this.velocidad = 0.2;
 
         //Variables para las animaciones:
@@ -24,13 +25,13 @@ class main extends THREE.Object3D {
         //Bool que indica si ha llegado al final del mapa, que sabe para saber que tiene que volver al inicio
         this.final = false;
 
+        //Array de los box helpers
+        this.boxHelpers = [];
+
         this.bimbot = new Bimbot();
-        /* this.bimbot.traverseVisible((nodo) => {
-            nodo.castShadow = true;
-            nodo.receiveShadow = true;
-        }); */
-        this.boxHelper = new THREE.Box3Helper(this.bimbot.getBBox(), 0xffff00);
-        this.add(this.boxHelper);
+        //La caja del bot irá aparte, ya que se tiene que crear y destruir al reiniciar el juego cuando muere
+        this.botBoxHelper = new THREE.Box3Helper(this.bimbot.getBBox(), 0xffff00);
+        this.add(this.botBoxHelper);
 
         this.animationsMap = this.bimbot.animations; //Mapa de las animaciones del bimbot
         this.bimbot.position.z = 150;
@@ -54,9 +55,12 @@ class main extends THREE.Object3D {
         this.end = this.createEnd();
         this.endBox = new THREE.Box3();
         //this.endBox.copy(this.end.geometry.boundingBox).applyMatrix4(this.end.matrixWorld);
-        var endHelper = new THREE.Box3Helper(this.endBox, 0xABCDEF);
-        this.add(endHelper);
+        this.endHelper = new THREE.Box3Helper(this.endBox, 0xABCDEF);
+        this.add(this.endHelper);
         this.add(this.end);
+
+        //Para establecer por defecto que las box helpers no sean visibles
+        this.setBoxHelpers(false);
 
         //Defino los limites en los que puede moverse por el mapa
         this.limiteZ = 170;
@@ -88,10 +92,30 @@ class main extends THREE.Object3D {
 
     }
 
+    // ******* ******* ******* GUI ******* ******* *******
+
+    setBoxHelpers(value){
+        this.botBoxHelper.visible = value;
+        this.endHelper.visible = value;
+        this.objetos.setBoxHelpers(value);
+    }
+
+    createGUI(gui, titleGUI) {
+
+        this.guiControls = { boxHelpers: false }
+
+        var folder = gui.addFolder(titleGUI);
+
+        //Cambiar la visibilidad de los box helpers
+        folder.add(this.guiControls, 'boxHelpers', true, false)
+            .name('Box Helpers: ')
+            .onChange((value) => this.setBoxHelpers(value));
+    }
+
     // ******* ******* ******* POINTS ******* ******* *******
 
     createEnd() {
-        var geom = new THREE.BoxGeometry(5, 5, 5);
+        var geom = new THREE.BoxGeometry(4, 5, 4);
         var material = new THREE.MeshToonMaterial({ visible: false });
 
         var caja = new THREE.Mesh(geom, material);
@@ -114,10 +138,15 @@ class main extends THREE.Object3D {
                 this.final = true;
             }
             this.end.position.z = 0;
+            //Activa el mensaje
+            var screen = document.getElementById("check-msg");
+            screen.style.display = "inline";
+            //this.boxHelper.visible = false;
         }
     }
 
     victoria(){
+        document.getElementById("check-msg").style.display = "none";
         alert("¡HAS GANADO!");
     }
 
@@ -219,23 +248,24 @@ class main extends THREE.Object3D {
             screen.style.display = "inline";
             //Elimina al bimbot de la escena, ya que ha muerto
             this.remove(this.bimbot);
-            this.remove(this.boxHelper);
+            this.remove(this.botBoxHelper);
         }
     }
     //Cuando pulsen el boton de Resume, se volverá a crear al bimbot y se quitará la pantalla de game over
     resume(event) {
         if (event.button === 0) {
-            document.getElementById("gameOverScreen").style.display = "none";
+            /* document.getElementById("gameOverScreen").style.display = "none";
             this.bimbot = new Bimbot();
             this.add(this.bimbot);
             this.gameResumed = true;
-            this.boxHelper = new THREE.Box3Helper(this.bimbot.getBBox(), 0xffff00);
-            this.add(this.boxHelper);
+            this.botBoxHelper = new THREE.Box3Helper(this.bimbot.getBBox(), 0xffff00);
+            this.add(this.botBoxHelper);
             //Resetea los coleccionables borrando lo restantes y creandolos todos de nuevo
             for (var i = 0; i < this.coleccionables.length; i++) {
                 this.objetos.remove(this.coleccionables[i]);
             }
-            this.objetos.createCollectables();
+            this.objetos.createCollectables(); */
+            window.location.reload();
         }
     }
 
@@ -354,12 +384,8 @@ class main extends THREE.Object3D {
         }
     }
 
-    createGUI(gui, str) {
 
-        this.guiControls = {
-        }
-        var folder = gui.addFolder(str);
-    }
+    // ******* ******* ******* UPDATE ******* ******* *******
 
     update() {
         var dt = this.clock.getDelta();

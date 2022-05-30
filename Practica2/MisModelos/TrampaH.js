@@ -41,7 +41,7 @@ class TrampaH extends THREE.Object3D {
 
     }
 
-    update(dt){
+    update(dt, velocidad){
         this.trampaH.update(dt); //hay que actualizar tambien el tronco
         TWEEN.update();
     }

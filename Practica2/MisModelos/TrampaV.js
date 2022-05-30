@@ -25,7 +25,7 @@ class TrampaV extends THREE.Object3D {
         var origen = {x: -this.trampaV.largoApoyo/3, y: 3};
         var destino = {x: this.trampaV.largoApoyo/3, y: 3};
         var movimiento = new TWEEN.Tween(origen)
-            .to(destino, 1800)
+            .to(destino, 1400)
             .easing(TWEEN.Easing.Quadratic.InOut)
             .onUpdate (() => {  
                 this.trampaV.position.x = origen.x;

@@ -10,10 +10,20 @@ body{
 
 #Messages{
     position:absolute; 
-    left:100px; 
+    left: 5%; 
     padding: 10px 15px; 
     background-color: rgb(243, 170, 141); 
     opacity: 0.7; 
+}
+
+#check-msg{
+    position:absolute; 
+    left: 5%; 
+    top: 80%;
+    padding: 10px 15px; 
+    background-color: rgb(243, 170, 141); 
+    opacity: 0.7; 
+    display: none;
 }
 
 #gameOverScreen{

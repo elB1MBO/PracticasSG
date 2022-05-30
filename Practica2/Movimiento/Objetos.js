@@ -14,6 +14,9 @@ class Objetos extends THREE.Object3D{
         //Reloj
         this.clock = new THREE.Clock();
 
+        //Array que contiene todos los box helpers
+        this.boxHelpers = [];
+
         this.cajas = [];
         this.coleccionables = [];
         this.trampas = [];
@@ -21,6 +24,20 @@ class Objetos extends THREE.Object3D{
         this.createObstacles();
         this.createCollectables();
         this.createCajas();
+        //Linea de meta, solo visual, para que el jugador sepa exactemente donde empezó
+        this.createMeta();
+
+        //Una vez se han creado todos los objetos, se añaden todos los que estan en el array
+        for(var i=0; i<this.boxHelpers.length; i++){
+          this.add(this.boxHelpers[i]);
+        }
+        
+    }
+
+    setBoxHelpers(value){
+      for(var i=0; i<this.boxHelpers.length; i++){
+        this.boxHelpers[i].visible = value;
+      }
     }
 
     getCajas(){
@@ -46,14 +63,14 @@ class Objetos extends THREE.Object3D{
       var trampaH = this.importTrampaH();
       trampaH.position.z = 45;
       boxHelper = new THREE.Box3Helper(trampaH.getBBox(), 0xffff00);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.trampas.push(trampaH);
       this.add(trampaH);
       
       var trampaV = this.importTrampaV();
       trampaV.position.z = 65;
       boxHelper = new THREE.Box3Helper(trampaV.getBBox(), 0xffff00);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.trampas.push(trampaV);
       this.add(trampaV);
 
@@ -61,21 +78,21 @@ class Objetos extends THREE.Object3D{
       trampaH.rotation.y = Math.PI;
       trampaH.position.z = 95;
       boxHelper = new THREE.Box3Helper(trampaH.getBBox(), 0xffff00);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.trampas.push(trampaH);
       this.add(trampaH);
 
       trampaH = this.importTrampaH();
       trampaH.position.z = 110;
       boxHelper = new THREE.Box3Helper(trampaH.getBBox(), 0xffff00);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.trampas.push(trampaH);
       this.add(trampaH);
 
       trampaV = this.importTrampaV();
       trampaV.position.z = 130;
       boxHelper = new THREE.Box3Helper(trampaV.getBBox(), 0xffff00);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.trampas.push(trampaV);
       this.add(trampaV);
     }
@@ -86,7 +103,7 @@ class Objetos extends THREE.Object3D{
       var trampaP = this.importTrampa(ladoBase);
       trampaP.position.z = 30;
       var boxHelper = new THREE.Box3Helper(trampaP.getBBox(), 0xffff00);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.trampas.push(trampaP);
       this.add(trampaP);
 
@@ -94,7 +111,7 @@ class Objetos extends THREE.Object3D{
       trampaP.position.z = 30;
       trampaP.position.x = -6;
       var boxHelper = new THREE.Box3Helper(trampaP.getBBox(), 0xffff00);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.trampas.push(trampaP);
       this.add(trampaP);
 
@@ -102,30 +119,30 @@ class Objetos extends THREE.Object3D{
       trampaP.position.z = 30;
       trampaP.position.x = 6;
       var boxHelper = new THREE.Box3Helper(trampaP.getBBox(), 0xffff00);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.trampas.push(trampaP);
       this.add(trampaP);
 
-      trampaP = this.importTrampa(ladoBase*1.25);
+      trampaP = this.importTrampa(ladoBase*1.1);
       trampaP.position.z = 80;
       trampaP.position.x = 6;
       var boxHelper = new THREE.Box3Helper(trampaP.getBBox(), 0xffff00);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.trampas.push(trampaP);
       this.add(trampaP);
 
-      trampaP = this.importTrampa(ladoBase*1.25);
+      trampaP = this.importTrampa(ladoBase*1.1);
       trampaP.position.z = 130;
       var boxHelper = new THREE.Box3Helper(trampaP.getBBox(), 0xffff00);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.trampas.push(trampaP);
       this.add(trampaP);
 
-      trampaP = this.importTrampa(ladoBase*1.25);
+      trampaP = this.importTrampa(ladoBase*1.1);
       trampaP.position.z = 130;
       trampaP.position.x = -6.5;
       var boxHelper = new THREE.Box3Helper(trampaP.getBBox(), 0xffff00);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.trampas.push(trampaP);
       this.add(trampaP);
 
@@ -137,14 +154,14 @@ class Objetos extends THREE.Object3D{
       var caja = this.importCaja();
       caja.position.z = 80;
       boxHelper = new THREE.Box3Helper(caja.getBBox(), 0xB72592);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.cajas.push(caja);
       this.add(caja);
       caja = this.importCaja();
       caja.position.z = 80;
       caja.position.x = -5;
       boxHelper = new THREE.Box3Helper(caja.getBBox(), 0xB72592);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.cajas.push(caja);
       this.add(caja);
     }
@@ -156,14 +173,14 @@ class Objetos extends THREE.Object3D{
       var tornillo = this.importTornillo();
       tornillo.position.z = 10;
       boxHelper = new THREE.Box3Helper(tornillo.getBBox(), 0x40A0E4);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.coleccionables.push(tornillo);
       this.add(tornillo);
       
       var tuerca = this.importTuerca();
       tuerca.position.z = 20;
       boxHelper = new THREE.Box3Helper(tuerca.getBBox(), 0x40A0E4);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.coleccionables.push(tuerca);
       this.add(tuerca);
 
@@ -171,7 +188,7 @@ class Objetos extends THREE.Object3D{
       tornillo.position.z = 65;
       tornillo.position.x = -7;
       boxHelper = new THREE.Box3Helper(tornillo.getBBox(), 0x40A0E4);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.coleccionables.push(tornillo);
       this.add(tornillo);
       
@@ -179,7 +196,7 @@ class Objetos extends THREE.Object3D{
       tuerca.position.z = 95;
       tuerca.position.x = -7;
       boxHelper = new THREE.Box3Helper(tuerca.getBBox(), 0x40A0E4);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.coleccionables.push(tuerca);
       this.add(tuerca);
 
@@ -187,7 +204,7 @@ class Objetos extends THREE.Object3D{
       tornillo.position.z = 95;
       tornillo.position.x = 7;
       boxHelper = new THREE.Box3Helper(tornillo.getBBox(), 0x40A0E4);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.coleccionables.push(tornillo);
       this.add(tornillo);
       
@@ -196,11 +213,24 @@ class Objetos extends THREE.Object3D{
       tuerca.scale.x = 0.4;
       tuerca.scale.y = 0.4;
       tuerca.scale.z = 0.4;
+      tuerca.position.y = 4;
       tuerca.position.z = 160;
       boxHelper = new THREE.Box3Helper(tuerca.getBBox(), 0x40A0E4);
-      this.add(boxHelper);
+      this.boxHelpers.push(boxHelper);
       this.coleccionables.push(tuerca);
       this.add(tuerca);
+    }
+
+    createMeta(){
+      var geom = new THREE.BoxGeometry(20, 0.01, 5);
+      var textura = new THREE.TextureLoader().load('../imgs/textura-ajedrezada.jpg');
+      textura.wrapS = THREE.RepeatWrapping;
+      textura.wrapT = THREE.RepeatWrapping;
+      textura.repeat.set(3, 1);
+      var material = new THREE.MeshPhongMaterial({map:textura});
+
+      var meta = new THREE.Mesh(geom, material);
+      this.add(meta);
     }
 
     
@@ -265,7 +295,7 @@ class Objetos extends THREE.Object3D{
     return caja;
   }
 
-  // ******* ******* ******* ******* ******* ******* ******* 
+  // ******* ******* ******* UPDATE ******* ******* ******* 
 
     update(dt){
         //var dt = this.clock.getDelta();

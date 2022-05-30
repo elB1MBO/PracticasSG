@@ -1,6 +1,4 @@
 import * as THREE from '../libs/three.module.js'
-import { GLTFLoader } from '../libs/GLTFLoader.js'
-import * as TWEEN from '../libs/tween.esm.js'
 import * as KeyCode from '../libs/keycode.esm.js'
 import { Bimbot } from './Bimbot.js'
 import { Objetos } from './Objetos.js'
@@ -90,6 +88,9 @@ class main extends THREE.Object3D {
         return this.camara;
     }
 
+
+    // ******* ******* ******* ANIMACIONES ******* ******* *******
+
     //Funcion que se activa cuando se aprieta una tecla.
     onKeyDown(event) {
         var x = event.which || event.key;
@@ -98,22 +99,51 @@ class main extends THREE.Object3D {
                 //Cambia el estado de la variable corriendo a true
                 this.movimientos[0] = true;
                 this.startAnimation = true;
-                this.bimbot.getModelo().rotation.y = Math.PI * 2;
+                if (this.movimientos[1] == true) { //Diagonal hacia delante-izqda
+                    this.bimbot.getModelo().rotation.y = Math.PI / 4;
+                }
+                else if (this.movimientos[3] == true) { //Diagonal hacia delante-dcha
+                    this.bimbot.getModelo().rotation.y = -Math.PI / 4;
+                } else {
+                    this.bimbot.getModelo().rotation.y = Math.PI * 2;
+                }
+
                 break;
             case KeyCode.KEY_A:
                 this.movimientos[1] = true;
                 this.startAnimation = true;
-                this.bimbot.getModelo().rotation.y = Math.PI / 2;
+                if (this.movimientos[0] == true) { //Diagonal hacia delante-izqda
+                    this.bimbot.getModelo().rotation.y = Math.PI / 4;
+                }
+                else if (this.movimientos[2] == true) { //Diagonal hacia detras-izqda
+                    this.bimbot.getModelo().rotation.y = Math.PI * 3 / 4;
+                } else {
+                    this.bimbot.getModelo().rotation.y = Math.PI / 2;
+                }
                 break;
             case KeyCode.KEY_S:
                 this.movimientos[2] = true;
                 this.startAnimation = true;
-                this.bimbot.getModelo().rotation.y = Math.PI;
+                if (this.movimientos[1] == true) { //Diagonal hacia detras-izqda
+                    this.bimbot.getModelo().rotation.y = Math.PI * 3 / 4;
+                }
+                else if (this.movimientos[3] == true) { //Diagonal hacia detras-dcha
+                    this.bimbot.getModelo().rotation.y = -Math.PI * 3 / 4;
+                } else {
+                    this.bimbot.getModelo().rotation.y = Math.PI;
+                }
                 break;
             case KeyCode.KEY_D:
                 this.movimientos[3] = true;
                 this.startAnimation = true;
-                this.bimbot.getModelo().rotation.y = -Math.PI / 2;
+                if (this.movimientos[0] == true) { //Diagonal hacia delante-dcha
+                    this.bimbot.getModelo().rotation.y = -Math.PI / 4;
+                }
+                else if (this.movimientos[2] == true) { //Diagonal hacia detras-dcha
+                    this.bimbot.getModelo().rotation.y = -Math.PI * 3 / 4;
+                } else {
+                    this.bimbot.getModelo().rotation.y = -Math.PI / 2;
+                }
                 break;
             default:
                 break;
@@ -127,18 +157,22 @@ class main extends THREE.Object3D {
                 //Cambia el estado de la variable corriendo a false
                 this.movimientos[0] = false;
                 this.idle = true;
+                this.startAnimation = true;
                 break;
             case KeyCode.KEY_A:
                 this.movimientos[1] = false;
                 this.idle = true;
+                this.startAnimation = true;
                 break;
             case KeyCode.KEY_S:
                 this.movimientos[2] = false;
                 this.idle = true;
+                this.startAnimation = true;
                 break;
             case KeyCode.KEY_D:
                 this.movimientos[3] = false;
                 this.idle = true;
+                this.startAnimation = true;
                 break;
         }
         this.bimbot.fadeToAction('Idle', true, 1);
@@ -185,42 +219,50 @@ class main extends THREE.Object3D {
             }
         }
 
-        //Hacia delante
-
-        var play = "";
-
-        if (this.movimientos[0] == true) {
-            this.bimbot.position.z += 0.3;
-            if (this.startAnimation) {
-                //this.bimbot.fadeToAction("Running", true, 1);
-                play = "Running";
+        if (this.movimientos[0] === true) {
+            if (this.bimbot.position.z < this.limiteZ) {
+                this.bimbot.position.z += this.velocidad;
+            }
+            if (this.startAnimation && this.currentAction != "Running") {
+                this.bimbot.fadeToAction("Running", true, 1);
                 this.startAnimation = false;
             }
         }
         //Izquierda
-        if (this.movimientos[1] == true) {
-            this.bimbot.position.x += 0.3;
-            if (this.startAnimation) {
-                //this.bimbot.fadeToAction("Running", true, 1);
-                play = "Running";
+        if (this.movimientos[1] === true) {
+            if (this.bimbot.position.x < this.limiteX) {
+                this.bimbot.position.x += this.velocidad;
+            }
+            if (this.startAnimation && this.currentAction != "Running") {
+                this.bimbot.fadeToAction("Running", true, 1);
                 this.startAnimation = false;
             }
         }
         //Atras
-        if (this.movimientos[2] == true) {
-            this.bimbot.position.z -= 0.3;
-            if (this.startAnimation) {
-                //this.bimbot.fadeToAction("Running", true, 1);
-                play = "Running";
+        if (this.movimientos[2] === true) {
+            if (this.bimbot.position.z > this.limiteZN) {
+                this.bimbot.position.z -= this.velocidad;
+            }
+            if (this.startAnimation && this.currentAction != "Running") {
+                this.bimbot.fadeToAction("Running", true, 1);
                 this.startAnimation = false;
             }
         }
         //Derecha
-        if (this.movimientos[3] == true) {
-            this.bimbot.position.x -= 0.3;
-            if (this.startAnimation) {
-                //this.bimbot.fadeToAction("Running", true, 1);
-                play = "Running";
+        if (this.movimientos[3] === true) {
+            if (this.bimbot.position.x > this.limiteXN) {
+                this.bimbot.position.x -= this.velocidad;
+            }
+            if (this.startAnimation && this.currentAction != "Running") {
+                this.bimbot.fadeToAction("Running", true, 1);
+                this.startAnimation = false;
+            }
+        }
+
+        //Boton izqdo raton
+        if (this.movimientos[4] === true) {
+            if (this.startAnimation && this.currentAction != "Running") {
+                this.bimbot.fadeToAction("Punch", false, 1);
                 this.startAnimation = false;
             }
         }
