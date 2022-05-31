@@ -157,15 +157,6 @@ class main extends THREE.Object3D {
     }
 
     // ******* ******* ******* COLLIDERS ******* ******* *******
-
-    //Funcion que comprueba si dos boxes han colisionado
-    intersectBoxes(b1, b2) {
-        var vectorBetweenBoxes = new THREE.Vector2();
-        vectorBetweenBoxes.subVectors(new THREE.Vector2(b1.position.x, b1.position.z),
-            new THREE.Vector2(b2.position.x, b2.position.z));
-        return (vectorBetweenBoxes.length() < 2);
-    }
-
     //Hay 3 funciones que comprueban la colision, una por cada tipo de objeto, ya que hacen cosas diferentes
 
     checkCollisions(objeto) {

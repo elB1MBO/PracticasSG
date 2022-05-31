@@ -5,7 +5,6 @@ import * as TWEEN from '../libs/tween.esm.js'
 class Bimbot extends THREE.Object3D {
   constructor() {
     super();
-    this.clock = new THREE.Clock();
     var that = this;
     var loader = new GLTFLoader();
     loader.load( '../models/gltf/robot.glb', ( gltf ) => {
